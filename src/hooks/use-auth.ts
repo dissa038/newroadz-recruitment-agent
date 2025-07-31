@@ -1,11 +1,11 @@
-'use client'
+Oké, en even een vraagje.'use client'
 
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { type User } from '@supabase/supabase-js'
 
-export function useSupabase() {
+export function useAuth() {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
   const router = useRouter()
@@ -54,9 +54,12 @@ export function useSupabase() {
     }
   }
 
+  const isAuthenticated = !!user
+
   return {
     user,
     loading,
+    isAuthenticated,
     supabase,
     signOut,
     signInWithProvider
