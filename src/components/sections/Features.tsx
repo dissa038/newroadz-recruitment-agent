@@ -1,18 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { useRef } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination } from "swiper/modules";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import type { Swiper as SwiperType } from "swiper";
 import { CustomSwiperPagination } from "@/components/ui/custom-swiper-pagination";
-import { 
-  CodeIcon, 
-  DatabaseIcon, 
-  PaletteIcon, 
-  ShieldIcon, 
-  ZapIcon, 
-  SmartphoneIcon 
+import { useSwiperPosition } from "@/hooks/useSwiperPosition";
+import { useSwiperAutoHeight } from "@/hooks/useSwiperAutoHeight";
+import {
+  Code2,
+  Database,
+  Palette,
+  Shield,
+  Zap,
+  Smartphone,
+  ArrowRight
 } from "lucide-react";
 
 // Import Swiper styles
@@ -20,133 +22,179 @@ import "swiper/css";
 import "swiper/css/pagination";
 
 export function Features() {
-  const [currentSlide, setCurrentSlide] = useState(0);
+  const swiperRef = useRef<SwiperType | null>(null);
+
+  // Use position hook to remember slide position
+  const {
+    activeIndex,
+    handleSlideChange: handlePositionChange,
+    initializeSwiper
+  } = useSwiperPosition('features-mobile');
+
+  // Use auto-height hook to ensure consistent slide heights
+  const {
+    handleSlideChangeWithAutoHeight,
+    handleInitWithAutoHeight
+  } = useSwiperAutoHeight({ debug: false });
 
   const features = [
     {
-      icon: <CodeIcon className="h-8 w-8" />,
+      icon: Code2,
       title: "TypeScript First",
-      description: "Volledig type-safe ontwikkeling met TypeScript configuratie out-of-the-box.",
-      badge: "Developer Experience"
+      description: "Type-safe ontwikkeling met volledige TypeScript ondersteuning en configuratie.",
+      category: "Development"
     },
     {
-      icon: <PaletteIcon className="h-8 w-8" />,
+      icon: Palette,
       title: "Design System",
-      description: "Complete UI component library met ShadCN UI en Tailwind CSS styling.",
-      badge: "UI/UX"
+      description: "Complete UI library met ShadCN componenten en Tailwind CSS styling.",
+      category: "Design"
     },
     {
-      icon: <DatabaseIcon className="h-8 w-8" />,
-      title: "Supabase Backend",
+      icon: Database,
+      title: "Supabase Ready",
       description: "PostgreSQL database met authenticatie en real-time functionaliteiten.",
-      badge: "Backend"
+      category: "Backend"
     },
     {
-      icon: <ShieldIcon className="h-8 w-8" />,
-      title: "Form Validatie",
-      description: "Robuuste formulier validatie met Zod en React Hook Form integratie.",
-      badge: "Validatie"
+      icon: Shield,
+      title: "Form Validation",
+      description: "Robuuste validatie met Zod en React Hook Form voor betrouwbare forms.",
+      category: "Security"
     },
     {
-      icon: <ZapIcon className="h-8 w-8" />,
+      icon: Zap,
       title: "Performance",
       description: "Geoptimaliseerd voor snelheid met Next.js 15 en moderne build tools.",
-      badge: "Optimalisatie"
+      category: "Speed"
     },
     {
-      icon: <SmartphoneIcon className="h-8 w-8" />,
-      title: "Responsive Design",
-      description: "Mobile-first ontwerp dat perfect werkt op alle apparaten en schermformaten.",
-      badge: "Responsive"
+      icon: Smartphone,
+      title: "Responsive",
+      description: "Mobile-first design dat perfect werkt op alle apparaten en schermen.",
+      category: "Mobile"
     }
   ];
 
-  const handleSlideChange = (swiper: any) => {
-    setCurrentSlide(swiper.activeIndex);
+  // Combined slide change handler
+  const handleSlideChange = (swiper: SwiperType) => {
+    handlePositionChange(swiper);
+    handleSlideChangeWithAutoHeight(swiper);
+  };
+
+  // Combined swiper initialization
+  const handleSwiperInit = (swiper: SwiperType) => {
+    swiperRef.current = swiper;
+    initializeSwiper(swiper);
+    handleInitWithAutoHeight(swiper);
   };
 
   const handlePaginationClick = (index: number) => {
-    setCurrentSlide(index);
+    if (swiperRef.current) {
+      swiperRef.current.slideTo(index);
+    }
   };
 
   return (
-    <section className="py-24 bg-background">
+    <section className="py-20 bg-gradient-to-b from-background to-muted/20">
       <div className="container mx-auto px-4 md:px-6 lg:px-8">
-        <div className="text-center space-y-4 mb-16">
-          <Badge variant="outline" className="mb-4">
-            ✨ Features
-          </Badge>
-          <h2 className="text-3xl md:text-4xl font-bold tracking-tight">
+        {/* Header */}
+        <div className="text-center mb-16">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6">
+            <Zap className="h-4 w-4" />
+            Features
+          </div>
+          <h2 className="text-3xl md:text-5xl font-bold tracking-tight mb-4">
             Alles wat je nodig hebt
           </h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Een complete set van moderne tools en componenten om snel en efficiënt te ontwikkelen.
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            Een complete toolkit voor moderne web development
           </p>
         </div>
 
-        {/* Desktop Grid - Hidden on mobile */}
-        <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {features.map((feature, index) => (
-            <Card key={index} className="relative group hover:shadow-lg transition-all duration-300">
-              <CardHeader className="pb-4">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="p-2 bg-primary/10 rounded-lg text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                    {feature.icon}
+        {/* Desktop Grid */}
+        <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {features.map((feature, index) => {
+            const IconComponent = feature.icon;
+            return (
+              <div
+                key={index}
+                className="group relative p-6 rounded-2xl bg-card border border-border/50 hover:border-primary/20 hover:shadow-lg transition-all duration-300"
+              >
+                {/* Icon */}
+                <div className="flex items-center justify-between mb-6">
+                  <div className="p-3 rounded-xl bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
+                    <IconComponent className="h-6 w-6" />
                   </div>
-                  <Badge variant="secondary" className="text-xs">
-                    {feature.badge}
-                  </Badge>
+                  <span className="text-xs font-medium text-muted-foreground px-2 py-1 rounded-md bg-muted/50">
+                    {feature.category}
+                  </span>
                 </div>
-                <CardTitle className="text-xl">{feature.title}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription className="text-base leading-relaxed">
-                  {feature.description}
-                </CardDescription>
-              </CardContent>
-            </Card>
-          ))}
+
+                {/* Content */}
+                <div className="space-y-3">
+                  <h3 className="text-xl font-semibold group-hover:text-primary transition-colors">
+                    {feature.title}
+                  </h3>
+                  <p className="text-muted-foreground leading-relaxed">
+                    {feature.description}
+                  </p>
+                </div>
+
+                {/* Hover Arrow */}
+                <div className="absolute bottom-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <ArrowRight className="h-4 w-4 text-primary" />
+                </div>
+              </div>
+            );
+          })}
         </div>
 
-        {/* Mobile Swiper - Visible only on mobile */}
+        {/* Mobile Swiper */}
         <div className="md:hidden">
           <Swiper
             modules={[Pagination]}
-            spaceBetween={20}
+            spaceBetween={24}
             slidesPerView={1}
             onSlideChange={handleSlideChange}
-            initialSlide={currentSlide}
-            className="features-swiper overflow-visible"
-            style={{ overflow: 'visible' }}
+            onSwiper={handleSwiperInit}
+            initialSlide={activeIndex}
+            className="features-swiper"
           >
-            {features.map((feature, index) => (
-              <SwiperSlide key={index}>
-                <Card className="relative group hover:shadow-lg transition-all duration-300">
-                  <CardHeader className="pb-4">
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="p-2 bg-primary/10 rounded-lg text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                        {feature.icon}
+            {features.map((feature, index) => {
+              const IconComponent = feature.icon;
+              return (
+                <SwiperSlide key={index}>
+                  <div className="p-6 rounded-2xl bg-card border border-border/50 shadow-sm">
+                    {/* Icon */}
+                    <div className="flex items-center justify-between mb-6">
+                      <div className="p-3 rounded-xl bg-primary/10 text-primary">
+                        <IconComponent className="h-6 w-6" />
                       </div>
-                      <Badge variant="secondary" className="text-xs">
-                        {feature.badge}
-                      </Badge>
+                      <span className="text-xs font-medium text-muted-foreground px-2 py-1 rounded-md bg-muted/50">
+                        {feature.category}
+                      </span>
                     </div>
-                    <CardTitle className="text-xl">{feature.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <CardDescription className="text-base leading-relaxed">
-                      {feature.description}
-                    </CardDescription>
-                  </CardContent>
-                </Card>
-              </SwiperSlide>
-            ))}
+
+                    {/* Content */}
+                    <div className="space-y-3">
+                      <h3 className="text-xl font-semibold">
+                        {feature.title}
+                      </h3>
+                      <p className="text-muted-foreground leading-relaxed">
+                        {feature.description}
+                      </p>
+                    </div>
+                  </div>
+                </SwiperSlide>
+              );
+            })}
           </Swiper>
 
           {/* Custom Pagination */}
           <CustomSwiperPagination
             total={features.length}
-            current={currentSlide}
+            current={activeIndex}
             onSlideChange={handlePaginationClick}
             className="mt-8"
           />

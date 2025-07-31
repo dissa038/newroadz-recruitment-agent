@@ -13,6 +13,7 @@ import { DatePicker } from "@/components/ui/date-picker";
 import { TimePicker } from "@/components/ui/time-picker";
 import { DateRangePicker } from "@/components/ui/date-range-picker";
 import TimeRangePicker from "@/components/ui/time-range-picker";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 import { contactSchema, type ContactFormData } from "@/lib/validations";
 
@@ -422,9 +423,16 @@ export function ContactForm() {
 
                   {/* Submit */}
                   <div className="pt-6">
-                    <Button type="submit" size="lg" className="w-full text-lg py-6">
-                      Verstuur Project Aanvraag
-                    </Button>
+                    <Tooltip delayDuration={0}>
+                      <TooltipTrigger asChild>
+                        <Button type="submit" size="lg" className="w-full text-lg py-6">
+                          Verstuur Project Aanvraag
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Verzend hier je formulier.</p>
+                      </TooltipContent>
+                    </Tooltip>
                     <p className="text-center text-sm text-muted-foreground mt-4">
                       We nemen binnen 24 uur contact met je op om je project te bespreken.
                     </p>
