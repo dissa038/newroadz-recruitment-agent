@@ -2,9 +2,6 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, type SubmitHandler } from "react-hook-form";
-import { format } from "date-fns";
-import { nl } from "date-fns/locale";
-import { CalendarIcon, ClockIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
@@ -12,11 +9,12 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { DatePicker } from "@/components/ui/date-picker";
+import { TimePicker } from "@/components/ui/time-picker";
+import { DateRangePicker } from "@/components/ui/date-range-picker";
+import TimeRangePicker from "@/components/ui/time-range-picker";
 import { useToast } from "@/hooks/use-toast";
 import { contactSchema, type ContactFormData } from "@/lib/validations";
-import { cn } from "@/lib/utils";
 
 export function ContactForm() {
   const { toast } = useToast();
@@ -31,10 +29,11 @@ export function ContactForm() {
       projectType: "",
       budget: "",
       timeline: "",
-      preferredStartDate: new Date(),
-      projectDeadline: undefined,
-      availabilityStart: undefined,
-      availabilityEnd: undefined,
+      preferredStartDate: "",
+      preferredStartTime: null,
+      projectDeadline: "",
+      availabilityDateRange: { startDate: null, endDate: null },
+      availabilityTimeRange: { startTime: null, endTime: null },
       message: "",
       acceptTerms: false,
       newsletter: false,
@@ -225,46 +224,29 @@ export function ContactForm() {
                     </div>
                   </div>
 
-                  {/* Date pickers */}
+                  {/* Custom Pickers Demonstratie */}
                   <div className="space-y-6">
                     <h3 className="text-lg font-semibold border-b pb-2">Planning & Beschikbaarheid</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Demonstratie van alle 4 de custom pickers: DatePicker, TimePicker, DateRangePicker en TimeRangePicker
+                    </p>
 
                     <div className="grid md:grid-cols-2 gap-6">
                       <FormField
                         control={form.control}
                         name="preferredStartDate"
                         render={({ field }) => (
-                          <FormItem className="flex flex-col">
-                            <FormLabel>Gewenste Startdatum *</FormLabel>
-                            <Popover>
-                              <PopoverTrigger asChild>
-                                <FormControl>
-                                  <Button
-                                    variant="outline"
-                                    className={cn(
-                                      "w-full pl-3 text-left font-normal",
-                                      !field.value && "text-muted-foreground"
-                                    )}
-                                  >
-                                    {field.value ? (
-                                      format(field.value, "PPP", { locale: nl })
-                                    ) : (
-                                      <span>Selecteer een datum</span>
-                                    )}
-                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                  </Button>
-                                </FormControl>
-                              </PopoverTrigger>
-                              <PopoverContent className="w-auto p-0" align="start">
-                                <Calendar
-                                  mode="single"
-                                  selected={field.value}
-                                  onSelect={field.onChange}
-                                  disabled={(date) => date < new Date()}
-                                  initialFocus
-                                />
-                              </PopoverContent>
-                            </Popover>
+                          <FormItem>
+                            <FormLabel>Gewenste Startdatum * (DatePicker)</FormLabel>
+                            <FormControl>
+                              <DatePicker
+                                selectedDate={field.value}
+                                onChange={field.onChange}
+                              />
+                            </FormControl>
+                            <FormDescription>
+                              Custom DatePicker component
+                            </FormDescription>
                             <FormMessage />
                           </FormItem>
                         )}
@@ -272,41 +254,18 @@ export function ContactForm() {
 
                       <FormField
                         control={form.control}
-                        name="projectDeadline"
+                        name="preferredStartTime"
                         render={({ field }) => (
-                          <FormItem className="flex flex-col">
-                            <FormLabel>Project Deadline</FormLabel>
-                            <Popover>
-                              <PopoverTrigger asChild>
-                                <FormControl>
-                                  <Button
-                                    variant="outline"
-                                    className={cn(
-                                      "w-full pl-3 text-left font-normal",
-                                      !field.value && "text-muted-foreground"
-                                    )}
-                                  >
-                                    {field.value ? (
-                                      format(field.value, "PPP", { locale: nl })
-                                    ) : (
-                                      <span>Selecteer een datum</span>
-                                    )}
-                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                  </Button>
-                                </FormControl>
-                              </PopoverTrigger>
-                              <PopoverContent className="w-auto p-0" align="start">
-                                <Calendar
-                                  mode="single"
-                                  selected={field.value}
-                                  onSelect={field.onChange}
-                                  disabled={(date) => date < new Date()}
-                                  initialFocus
-                                />
-                              </PopoverContent>
-                            </Popover>
+                          <FormItem>
+                            <FormLabel>Gewenste Starttijd (TimePicker)</FormLabel>
+                            <FormControl>
+                              <TimePicker
+                                selectedTime={field.value ?? null}
+                                onChange={field.onChange}
+                              />
+                            </FormControl>
                             <FormDescription>
-                              Optioneel: Wanneer moet het project klaar zijn?
+                              Custom TimePicker component
                             </FormDescription>
                             <FormMessage />
                           </FormItem>
@@ -314,85 +273,65 @@ export function ContactForm() {
                       />
                     </div>
 
-                    <div className="grid md:grid-cols-2 gap-6">
-                      <FormField
-                        control={form.control}
-                        name="availabilityStart"
-                        render={({ field }) => (
-                          <FormItem className="flex flex-col">
-                            <FormLabel>Beschikbaar vanaf</FormLabel>
-                            <Popover>
-                              <PopoverTrigger asChild>
-                                <FormControl>
-                                 <Button
-                                    variant="outline"
-                                    className={cn(
-                                      "w-full pl-3 text-left font-normal",
-                                      !field.value && "text-muted-foreground"
-                                    )}
-                                  >
-                                    {field.value ? (
-                                      format(field.value, "PPP", { locale: nl })
-                                    ) : (
-                                      <span>Selecteer een datum</span>
-                                    )}
-                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                  </Button>
-                                </FormControl>
-                              </PopoverTrigger>
-                              <PopoverContent className="w-auto p-0" align="start">
-                                <Calendar
-                                  mode="single"
-                                  selected={field.value}
-                                  onSelect={field.onChange}
-                                  initialFocus
-                                />
-                              </PopoverContent>
-                            </Popover>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+                    <FormField
+                      control={form.control}
+                      name="projectDeadline"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Project Deadline (DatePicker)</FormLabel>
+                          <FormControl>
+                            <DatePicker
+                              selectedDate={field.value || ""}
+                              onChange={field.onChange}
+                            />
+                          </FormControl>
+                          <FormDescription>
+                            Optioneel: Wanneer moet het project klaar zijn?
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                      <FormField
-                        control={form.control}
-                        name="availabilityEnd"
-                        render={({ field }) => (
-                          <FormItem className="flex flex-col">
-                            <FormLabel>Beschikbaar tot</FormLabel>
-                            <Popover>
-                              <PopoverTrigger asChild>
-                                <FormControl>
-                                  <Button
-                                    variant="outline"
-                                    className={cn(
-                                      "w-full pl-3 text-left font-normal",
-                                      !field.value && "text-muted-foreground"
-                                    )}
-                                  >
-                                    {field.value ? (
-                                      format(field.value, "PPP", { locale: nl })
-                                    ) : (
-                                      <span>Selecteer een datum</span>
-                                    )}
-                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                  </Button>
-                                </FormControl>
-                              </PopoverTrigger>
-                              <PopoverContent className="w-auto p-0" align="start">
-                                <Calendar
-                                  mode="single"
-                                  selected={field.value}
-                                  onSelect={field.onChange}
-                                  initialFocus
-                                />
-                              </PopoverContent>
-                            </Popover>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
+                    <FormField
+                      control={form.control}
+                      name="availabilityDateRange"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Beschikbaarheid Periode (DateRangePicker)</FormLabel>
+                          <FormControl>
+                            <DateRangePicker
+                              dateRange={field.value || { startDate: null, endDate: null }}
+                              onChange={field.onChange}
+                            />
+                          </FormControl>
+                          <FormDescription>
+                            Custom DateRangePicker - selecteer een periode waarin je beschikbaar bent
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="availabilityTimeRange"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Beschikbaarheid Tijden (TimeRangePicker)</FormLabel>
+                          <FormControl>
+                            <TimeRangePicker
+                              timeRange={field.value || { startTime: null, endTime: null }}
+                              onChange={field.onChange}
+                            />
+                          </FormControl>
+                          <FormDescription>
+                            Custom TimeRangePicker - selecteer je beschikbare tijden per dag
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   </div>
 
                   {/* Message */}

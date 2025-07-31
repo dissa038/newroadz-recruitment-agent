@@ -229,10 +229,9 @@ export default function DatePicker({
               onClick={() => navigateMonth(-1)}
               disabled={!canNavigatePrevious()}
               className={`w-8 h-8 flex items-center justify-center rounded-[4px] transition-colors
-                ${
-                  canNavigatePrevious()
-                    ? "hover:bg-muted"
-                    : "opacity-50 cursor-not-allowed"
+                ${canNavigatePrevious()
+                  ? "hover:bg-muted"
+                  : "opacity-50 cursor-not-allowed"
                 }`}
             >
               <svg
@@ -293,20 +292,17 @@ export default function DatePicker({
                   aspect-square flex items-center justify-center rounded-[4px] text-sm
                   transition-all duration-200 relative
                   ${!day.isCurrentMonth ? "text-muted-foreground/50" : ""}
-                  ${
-                    isPastDate(day.date)
-                      ? "opacity-50 cursor-not-allowed"
-                      : "hover:bg-primary hover:text-primary-foreground"
+                  ${isPastDate(day.date)
+                    ? "opacity-50 cursor-not-allowed"
+                    : "hover:bg-primary hover:text-primary-foreground"
                   }
-                  ${
-                    isSelected(day.date)
-                      ? "bg-primary text-primary-foreground"
-                      : ""
+                  ${isSelected(day.date)
+                    ? "bg-primary text-primary-foreground"
+                    : ""
                   }
-                  ${
-                    isToday(day.date) && !isSelected(day.date)
-                      ? "ring-[1px] ring-primary"
-                      : ""
+                  ${isToday(day.date) && !isSelected(day.date)
+                    ? "ring-[1px] ring-primary"
+                    : ""
                   }
                 `}
               >
