@@ -1,36 +1,162 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🚀 Next.js Complete Template
 
-## Getting Started
+Een complete Next.js template met alle moderne tools en componenten die je nodig hebt om snel te starten met je volgende project.
 
-First, run the development server:
+## ✨ Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- **Next.js 15** met App Router en TypeScript
+- **Tailwind CSS 3.3.3** voor styling
+- **Alle ShadCN UI componenten** geïnstalleerd
+- **Supabase** integratie voor backend
+- **Dark/Light mode** met next-themes
+- **Zod** voor formulier validatie
+- **React Hook Form** voor formulierbeheer
+- **Framer Motion** voor animaties
+- **React Icons, Lucide React & Heroicons** voor iconen
+- **Swiper** voor sliders/carousels
+
+## 🛠️ Geïnstalleerde Packages
+
+### Core
+- `next` - Next.js framework
+- `react` & `react-dom` - React library
+- `typescript` - TypeScript support
+
+### Styling
+- `tailwindcss@3.3.3` - Utility-first CSS framework
+- `postcss` & `autoprefixer` - CSS processing
+- `tailwind-merge` - Merge Tailwind classes
+- `clsx` - Conditional class names
+- `next-themes` - Dark/light mode
+
+### UI Components
+- Alle ShadCN UI componenten
+- `lucide-react` - Beautiful icons
+- `react-icons` - Popular icon libraries
+- `@heroicons/react` - Heroicons
+
+### Forms & Validation
+- `zod` - Schema validation
+- `react-hook-form` - Form management
+- `@hookform/resolvers` - Form resolvers
+
+### Backend & Database
+- `@supabase/supabase-js` - Supabase client
+
+### Animations & Interactions
+- `framer-motion` - Animation library
+- `swiper` - Touch slider
+
+## 🚀 Getting Started
+
+1. **Installeer dependencies:**
+   ```bash
+   npm install
+   ```
+
+2. **Start development server:**
+   ```bash
+   npm run dev
+   ```
+
+3. **Open je browser:**
+   Ga naar [http://localhost:3000](http://localhost:3000)
+
+## 📁 Project Structuur
+
+```
+src/
+├── app/                    # Next.js App Router
+│   ├── layout.tsx         # Root layout
+│   ├── page.tsx           # Homepage
+│   └── globals.css        # Global styles
+├── components/
+│   ├── ui/                # ShadCN UI componenten
+│   ├── sections/          # Pagina secties
+│   ├── layout/            # Layout componenten
+│   └── theme-provider.tsx # Theme provider
+├── lib/
+│   ├── utils.ts           # Utility functies
+│   └── validations.ts     # Zod schemas
+└── hooks/                 # Custom hooks
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🎨 ShadCN UI Componenten
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Alle volgende componenten zijn geïnstalleerd en klaar voor gebruik:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Accordion, Alert, Alert Dialog
+- Aspect Ratio, Avatar, Badge, Button
+- Calendar, Card, Checkbox, Collapsible
+- Command, Context Menu, Dialog
+- Dropdown Menu, Form, Hover Card
+- Input, Label, Menubar, Navigation Menu
+- Popover, Progress, Radio Group
+- Scroll Area, Select, Separator, Sheet
+- Skeleton, Slider, Switch, Table
+- Tabs, Textarea, Toast, Toggle, Tooltip
 
-## Learn More
+## 🔧 Configuratie
 
-To learn more about Next.js, take a look at the following resources:
+### Tailwind CSS
+- Geconfigureerd voor dark mode
+- Custom kleuren en variabelen
+- Optimized voor ShadCN UI
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Next.js
+- Image domains geconfigureerd voor Pexels, Unsplash, Pixabay
+- TypeScript strict mode
+- App Router enabled
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Supabase
+- Client geconfigureerd
+- Klaar voor database, auth en RLS
 
-## Deploy on Vercel
+## 📝 Gebruik
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Formulieren met Zod
+```typescript
+import { z } from "zod";
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+const schema = z.object({
+  email: z.string().email(),
+  password: z.string().min(8),
+});
+```
+
+### ShadCN UI Componenten
+```typescript
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+```
+
+### Theme Switching
+```typescript
+import { useTheme } from "next-themes";
+
+const { theme, setTheme } = useTheme();
+```
+
+## 🎯 Volgende Stappen
+
+1. **Supabase Setup:** Configureer je Supabase project
+2. **Environment Variables:** Voeg je API keys toe
+3. **Database Schema:** Ontwerp je database structuur
+4. **Authentication:** Implementeer user auth
+5. **Deploy:** Deploy naar Vercel of je favoriete platform
+
+## 📚 Documentatie
+
+- [Next.js Docs](https://nextjs.org/docs)
+- [ShadCN UI](https://ui.shadcn.com/)
+- [Tailwind CSS](https://tailwindcss.com/docs)
+- [Supabase](https://supabase.com/docs)
+- [Zod](https://zod.dev/)
+
+## 🤝 Contributing
+
+Voel je vrij om issues te openen of pull requests te maken!
+
+## 📄 License
+
+MIT License - zie [LICENSE](LICENSE) voor details.
