@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bedankt voor je Contactaanvraag</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .content {
+            background-color: #ffffff;
+            padding: 30px;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+        }
+        .summary {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .summary-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+        .cta {
+            background-color: #28a745;
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 5px;
+            display: inline-block;
+            margin: 20px 0;
+        }
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e9ecef;
+            text-align: center;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎉 Bedankt {{firstName}}!</h1>
+        <p>Je contactaanvraag is succesvol ontvangen</p>
+    </div>
+
+    <div class="content">
+        <p>Hallo {{firstName}},</p>
+        
+        <p>Bedankt voor je interesse! We hebben je contactaanvraag ontvangen en zijn enthousiast om meer te horen over je project.</p>
+        
+        <div class="summary">
+            <h3>📋 Samenvatting van je aanvraag:</h3>
+            
+            <div class="summary-item">
+                <strong>🚀 Project Type:</strong>
+                <span>{{projectType}}</span>
+            </div>
+            
+            <div class="summary-item">
+                <strong>💰 Budget:</strong>
+                <span>{{budget}}</span>
+            </div>
+            
+            <div class="summary-item">
+                <strong>⏰ Timeline:</strong>
+                <span>{{timeline}}</span>
+            </div>
+            
+            <div class="summary-item">
+                <strong>📅 Gewenste Start:</strong>
+                <span>{{preferredStartDate}}</span>
+            </div>
+        </div>
+        
+        <h3>⏭️ Wat gebeurt er nu?</h3>
+        <ul>
+            <li>✅ We bekijken je aanvraag binnen 24 uur</li>
+            <li>📞 We nemen contact met je op voor een eerste gesprek</li>
+            <li>💡 We bespreken je ideeën en mogelijkheden</li>
+            <li>📝 We maken een voorstel op maat</li>
+        </ul>
+        
+        <p>Heb je nog vragen of wil je iets toevoegen? Reageer gerust op deze email!</p>
+        
+        <div style="text-align: center;">
+            <a href="mailto:{{contactEmail}}" class="cta">📧 Direct Contact</a>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p><strong>Met vriendelijke groet,</strong><br>Het Team</p>
+        <p style="font-size: 12px; margin-top: 20px;">
+            Deze email is automatisch gegenereerd. Je kunt er gewoon op reageren als je vragen hebt.
+        </p>
+    </div>
+</body>
+</html>

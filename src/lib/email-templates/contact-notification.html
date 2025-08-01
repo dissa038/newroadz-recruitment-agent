@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nieuwe Contactaanvraag</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .content {
+            background-color: #ffffff;
+            padding: 20px;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+        }
+        .field {
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+        }
+        .field strong {
+            color: #495057;
+        }
+        .message {
+            background-color: #e3f2fd;
+            padding: 15px;
+            border-radius: 4px;
+            border-left: 4px solid #2196f3;
+        }
+        .footer {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e9ecef;
+            font-size: 12px;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎯 Nieuwe Contactaanvraag</h1>
+        <p>Er is een nieuwe contactaanvraag binnengekomen via de website.</p>
+    </div>
+
+    <div class="content">
+        <div class="field">
+            <strong>👤 Naam:</strong> {{firstName}} {{lastName}}
+        </div>
+        
+        <div class="field">
+            <strong>📧 Email:</strong> <a href="mailto:{{email}}">{{email}}</a>
+        </div>
+        
+        {{#if phone}}
+        <div class="field">
+            <strong>📱 Telefoon:</strong> <a href="tel:{{phone}}">{{phone}}</a>
+        </div>
+        {{/if}}
+        
+        <div class="field">
+            <strong>🚀 Project Type:</strong> {{projectType}}
+        </div>
+        
+        <div class="field">
+            <strong>💰 Budget:</strong> {{budget}}
+        </div>
+        
+        <div class="field">
+            <strong>⏰ Timeline:</strong> {{timeline}}
+        </div>
+        
+        <div class="field">
+            <strong>📅 Gewenste Startdatum:</strong> {{preferredStartDate}}
+        </div>
+        
+        {{#if preferredStartTime}}
+        <div class="field">
+            <strong>🕐 Gewenste Starttijd:</strong> {{preferredStartTime}}
+        </div>
+        {{/if}}
+        
+        {{#if projectDeadline}}
+        <div class="field">
+            <strong>⏳ Project Deadline:</strong> {{projectDeadline}}
+        </div>
+        {{/if}}
+        
+        <div class="field">
+            <strong>📬 Newsletter:</strong> {{#if newsletter}}✅ Ja{{else}}❌ Nee{{/if}}
+        </div>
+        
+        <div class="message">
+            <strong>💬 Bericht:</strong><br>
+            {{message}}
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>Deze email is automatisch gegenereerd via het contactformulier op de website.</p>
+        <p>Reageer zo snel mogelijk op deze aanvraag voor de beste klantervaring.</p>
+    </div>
+</body>
+</html>

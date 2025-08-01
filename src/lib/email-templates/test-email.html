@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Email Template</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        .content {
+            margin-bottom: 30px;
+        }
+        .button {
+            display: inline-block;
+            background-color: #007bff;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .footer {
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+        .emoji {
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="emoji">🚀</div>
+            <h1>Test Email Template</h1>
+            <p>Dit is een test email om te controleren of Brevo correct werkt</p>
+        </div>
+
+        <div class="content">
+            <h2>👋 Hallo!</h2>
+            
+            <p>Als je deze email ontvangt, betekent dit dat:</p>
+            
+            <ul>
+                <li>✅ Brevo API is correct geconfigureerd</li>
+                <li>✅ Email service werkt naar behoren</li>
+                <li>✅ Templates worden correct geladen</li>
+                <li>✅ Je bent klaar om emails te versturen!</li>
+            </ul>
+            
+            <p>Deze test email bevat verschillende elementen om de styling te testen:</p>
+            
+            <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin: 20px 0;">
+                <strong>📊 Test Gegevens:</strong><br>
+                Timestamp: {{timestamp}}<br>
+                Environment: {{environment}}<br>
+                Version: {{version}}
+            </div>
+            
+            <div style="text-align: center;">
+                <a href="#" class="button">🔗 Test Button</a>
+            </div>
+            
+            <h3>🎨 Styling Test</h3>
+            <p>Deze paragraaf test de <strong>vetgedrukte tekst</strong>, <em>cursieve tekst</em>, en <u>onderstreepte tekst</u>.</p>
+            
+            <blockquote style="border-left: 4px solid #007bff; padding-left: 15px; margin: 20px 0; font-style: italic; color: #666;">
+                "Een goede email template is de basis voor effectieve communicatie." - Email Expert
+            </blockquote>
+        </div>
+
+        <div class="footer">
+            <p>🔧 Dit is een automatisch gegenereerde test email</p>
+            <p>Verstuur datum: {{sendDate}}</p>
+            <p style="font-size: 12px; margin-top: 15px;">
+                Als je deze email niet verwachtte, kun je deze veilig negeren.
+            </p>
+        </div>
+    </div>
+</body>
+</html>
