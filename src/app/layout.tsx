@@ -6,7 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 
 export const metadata: Metadata = {
   title: "Next.js Template",
-  description: "Complete Next.js template met ShadCN UI, Tailwind CSS, Supabase en meer",
+  description: "Complete Next.js template met AI, Supabase, Tailwind CSS en meer",
 };
 
 export const viewport = {
