@@ -1,162 +1,182 @@
 # 🚀 Next.js Complete Template
 
-Een complete Next.js template met alle moderne tools en componenten die je nodig hebt om snel te starten met je volgende project.
+Een complete, moderne Next.js template met alles wat je nodig hebt om direct te beginnen met het bouwen van professionele web applicaties.
 
 ## ✨ Features
 
-- **Next.js 15** met App Router en TypeScript
-- **Tailwind CSS 3.3.3** voor styling
-- **Alle ShadCN UI componenten** geïnstalleerd
-- **Supabase** integratie voor backend
-- **Dark/Light mode** met next-themes
-- **Zod** voor formulier validatie
-- **React Hook Form** voor formulierbeheer
-- **Framer Motion** voor animaties
-- **React Icons, Lucide React & Heroicons** voor iconen
-- **Swiper** voor sliders/carousels
+### 🔧 **Core Stack**
+- **Next.js 15** - App Router, Server Components, TypeScript
+- **React 19** - Nieuwste React features
+- **Tailwind CSS** - Utility-first CSS framework
+- **shadcn/ui** - Moderne, toegankelijke UI componenten
 
-## 🛠️ Geïnstalleerde Packages
+### 🔐 **Authentication & Database**
+- **Supabase** - Database, Authentication, Storage
+- **Row Level Security** - Veilige data toegang
+- **Real-time subscriptions** - Live data updates
 
-### Core
-- `next` - Next.js framework
-- `react` & `react-dom` - React library
-- `typescript` - TypeScript support
+### 🤖 **AI Integration**
+- **Google Gemini AI** - Text generatie en AI features
+- **Ready-to-use API routes** - Direct te gebruiken AI endpoints
 
-### Styling
-- `tailwindcss@3.3.3` - Utility-first CSS framework
-- `postcss` & `autoprefixer` - CSS processing
-- `tailwind-merge` - Merge Tailwind classes
-- `clsx` - Conditional class names
-- `next-themes` - Dark/light mode
+### 📧 **Email & Communication**
+- **Brevo** - Transactionele emails
+- **Contact formulieren** - Met validatie en error handling
 
-### UI Components
-- Alle ShadCN UI componenten
-- `lucide-react` - Beautiful icons
-- `react-icons` - Popular icon libraries
-- `@heroicons/react` - Heroicons
+### 🎨 **UI & UX**
+- **Dark/Light mode** - Automatische theme switching
+- **Responsive design** - Mobile-first approach
+- **Loading states** - Skeleton loaders
+- **Error handling** - 404 en error pages
+- **Toast notifications** - User feedback
 
-### Forms & Validation
-- `zod` - Schema validation
-- `react-hook-form` - Form management
-- `@hookform/resolvers` - Form resolvers
+### 📝 **Forms & Validation**
+- **React Hook Form** - Performante formulieren
+- **Zod** - Type-safe validatie
+- **Error handling** - Gebruiksvriendelijke foutmeldingen
 
-### Backend & Database
-- `@supabase/supabase-js` - Supabase client
+### 🎭 **Animations**
+- **Framer Motion** - Smooth animaties en transities
 
-### Animations & Interactions
-- `framer-motion` - Animation library
-- `swiper` - Touch slider
+## 🚀 Quick Start
 
-## 🚀 Getting Started
+### 1. Clone & Install
+```bash
+git clone <your-repo>
+cd next-js-template
+npm install
+```
 
-1. **Installeer dependencies:**
-   ```bash
-   npm install
-   ```
+### 2. Environment Setup
+```bash
+cp .env.local.example .env.local
+```
 
-2. **Start development server:**
-   ```bash
-   npm run dev
-   ```
+Vul je environment variables in:
+- **Supabase**: [supabase.com](https://supabase.com)
+- **Brevo**: [brevo.com](https://brevo.com)
+- **Google Gemini**: [makersuite.google.com](https://makersuite.google.com)
 
-3. **Open je browser:**
-   Ga naar [http://localhost:3000](http://localhost:3000)
+### 3. Run Development Server
+```bash
+npm run dev
+```
 
-## 📁 Project Structuur
+Open [http://localhost:3000](http://localhost:3000) 🎉
+
+## 📁 Project Structure
 
 ```
 src/
 ├── app/                    # Next.js App Router
-│   ├── layout.tsx         # Root layout
-│   ├── page.tsx           # Homepage
+│   ├── about/             # Example page with loading
+│   ├── api/               # API routes
+│   ├── auth/              # Authentication pages
 │   └── globals.css        # Global styles
-├── components/
-│   ├── ui/                # ShadCN UI componenten
-│   ├── sections/          # Pagina secties
-│   ├── layout/            # Layout componenten
-│   └── theme-provider.tsx # Theme provider
-├── lib/
-│   ├── utils.ts           # Utility functies
-│   └── validations.ts     # Zod schemas
-└── hooks/                 # Custom hooks
+├── components/            # Reusable components
+│   ├── ui/                # shadcn/ui components
+│   ├── layout/            # Layout components
+│   └── sections/          # Page sections
+├── hooks/                 # Custom React hooks
+├── lib/                   # Utilities & configurations
+└── providers/             # React context providers
 ```
 
-## 🎨 ShadCN UI Componenten
+## 🔧 Configuration
 
-Alle volgende componenten zijn geïnstalleerd en klaar voor gebruik:
+### Supabase Setup
+1. Create project op [supabase.com](https://supabase.com)
+2. Kopieer URL en anon key naar `.env.local`
+3. Run database migrations (zie `docs/SUPABASE_SETUP.md`)
 
-- Accordion, Alert, Alert Dialog
-- Aspect Ratio, Avatar, Badge, Button
-- Calendar, Card, Checkbox, Collapsible
-- Command, Context Menu, Dialog
-- Dropdown Menu, Form, Hover Card
-- Input, Label, Menubar, Navigation Menu
-- Popover, Progress, Radio Group
-- Scroll Area, Select, Separator, Sheet
-- Skeleton, Slider, Switch, Table
-- Tabs, Textarea, Toast, Toggle, Tooltip
+### Email Setup (Brevo)
+1. Account aanmaken op [brevo.com](https://brevo.com)
+2. API key genereren
+3. Sender email configureren
 
-## 🔧 Configuratie
+### AI Setup (Google Gemini)
+1. API key krijgen van [makersuite.google.com](https://makersuite.google.com)
+2. Key toevoegen aan `.env.local`
+3. Test met `/api/ai` endpoint
 
-### Tailwind CSS
-- Geconfigureerd voor dark mode
-- Custom kleuren en variabelen
-- Optimized voor ShadCN UI
+## 🎨 Customization
 
-### Next.js
-- Image domains geconfigureerd voor Pexels, Unsplash, Pixabay
-- TypeScript strict mode
-- App Router enabled
+### Styling
+- **Tailwind config**: `tailwind.config.js`
+- **CSS variables**: `src/app/globals.css`
+- **shadcn/ui**: `components.json`
 
-### Supabase
-- Client geconfigureerd
-- Klaar voor database, auth en RLS
+### Components
+- **UI Components**: `src/components/ui/`
+- **Custom Components**: `src/components/`
+- **Add new**: `npx shadcn@latest add [component]`
 
-## 📝 Gebruik
+## 📚 Usage Examples
 
-### Formulieren met Zod
-```typescript
-import { z } from "zod";
+### Metadata per page
+```tsx
+export const metadata: Metadata = {
+  title: 'Page Title | Next.js Template',
+  description: 'Page description for SEO',
+};
+```
 
-const schema = z.object({
-  email: z.string().email(),
-  password: z.string().min(8),
+### Loading states
+```tsx
+// loading.tsx in any folder
+export default function Loading() {
+  return <PageSkeleton />;
+}
+```
+
+### AI Integration
+```tsx
+const response = await fetch('/api/ai', {
+  method: 'POST',
+  body: JSON.stringify({ prompt: 'Hello AI!' }),
 });
 ```
 
-### ShadCN UI Componenten
-```typescript
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-```
+## 🚀 Deployment
 
-### Theme Switching
-```typescript
-import { useTheme } from "next-themes";
+### Vercel (Recommended)
+1. Push naar GitHub
+2. Connect op [vercel.com](https://vercel.com)
+3. Add environment variables
+4. Deploy! 🎉
 
-const { theme, setTheme } = useTheme();
-```
+### Other Platforms
+- **Netlify**: Works out of the box
+- **Railway**: Add `railway.toml`
+- **Docker**: `Dockerfile` included
 
-## 🎯 Volgende Stappen
+## 📖 Documentation
 
-1. **Supabase Setup:** Configureer je Supabase project
-2. **Environment Variables:** Voeg je API keys toe
-3. **Database Schema:** Ontwerp je database structuur
-4. **Authentication:** Implementeer user auth
-5. **Deploy:** Deploy naar Vercel of je favoriete platform
-
-## 📚 Documentatie
-
-- [Next.js Docs](https://nextjs.org/docs)
-- [ShadCN UI](https://ui.shadcn.com/)
-- [Tailwind CSS](https://tailwindcss.com/docs)
-- [Supabase](https://supabase.com/docs)
-- [Zod](https://zod.dev/)
+Meer gedetailleerde docs in de `docs/` folder:
+- [Supabase Setup](docs/SUPABASE_SETUP.md)
+- [Authentication](docs/AUTHENTICATION.md)
+- [Project Setup](docs/project-setup-and-rules.md)
 
 ## 🤝 Contributing
 
-Voel je vrij om issues te openen of pull requests te maken!
+1. Fork het project
+2. Create feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit changes (`git commit -m 'Add amazing feature'`)
+4. Push branch (`git push origin feature/amazing-feature`)
+5. Open Pull Request
 
 ## 📄 License
 
-MIT License - zie [LICENSE](LICENSE) voor details.
+MIT License - zie [LICENSE](LICENSE) file.
+
+## 🙏 Credits
+
+Gebouwd met liefde door [Your Name] met:
+- [Next.js](https://nextjs.org)
+- [Tailwind CSS](https://tailwindcss.com)
+- [shadcn/ui](https://ui.shadcn.com)
+- [Supabase](https://supabase.com)
+
+---
+
+**Happy coding! 🚀**
