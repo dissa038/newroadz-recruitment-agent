@@ -90,6 +90,61 @@ export function ContactForm() {
                       <h4 className="font-semibold mb-2">Hoe snel krijg ik een reactie?</h4>
                       <p className="text-muted-foreground">We reageren binnen 24 uur op alle project aanvragen.</p>
                     </div>
+
+                    <div>
+                      <h4 className="font-semibold mb-2">Wat gebeurt er na het versturen?</h4>
+                      <p className="text-muted-foreground">We plannen een gratis intake gesprek om je project te bespreken en een offerte op maat te maken.</p>
+                    </div>
+
+                    <div>
+                      <h4 className="font-semibold mb-2">Zijn er kosten verbonden aan de intake?</h4>
+                      <p className="text-muted-foreground">Nee, het eerste gesprek en de offerte zijn altijd gratis en vrijblijvend.</p>
+                    </div>
+
+                    <div>
+                      <h4 className="font-semibold mb-2">Welke informatie heb je nodig?</h4>
+                      <p className="text-muted-foreground">Hoe meer details je deelt over je project, doelen en wensen, hoe beter we je kunnen helpen.</p>
+                    </div>
+
+                    <div>
+                      <h4 className="font-semibold mb-2">Hoe werkt het ontwikkelproces?</h4>
+                      <p className="text-muted-foreground">Na de intake maken we een projectplan met duidelijke mijlpalen en deadlines. Je blijft altijd op de hoogte van de voortgang.</p>
+                    </div>
+
+                    <div>
+                      <h4 className="font-semibold mb-2">Kan ik wijzigingen aanbrengen tijdens het project?</h4>
+                      <p className="text-muted-foreground">Ja, we werken agile en kunnen flexibel omgaan met wijzigingen. Grote aanpassingen bespreken we altijd vooraf.</p>
+                    </div>
+
+                    <div>
+                      <h4 className="font-semibold mb-2">Wat voor ondersteuning krijg ik na oplevering?</h4>
+                      <p className="text-muted-foreground">We bieden altijd een garantieperiode en kunnen doorlopende ondersteuning en onderhoud verzorgen.</p>
+                    </div>
+
+                    <div>
+                      <h4 className="font-semibold mb-2">Werken jullie met vaste prijzen?</h4>
+                      <p className="text-muted-foreground">We maken altijd een gedetailleerde offerte met vaste prijzen per onderdeel, zodat je precies weet waar je aan toe bent.</p>
+                    </div>
+
+                    <div>
+                      <h4 className="font-semibold mb-2">Kan ik referenties zien van eerdere projecten?</h4>
+                      <p className="text-muted-foreground">Natuurlijk! We delen graag voorbeelden van ons werk en kunnen je in contact brengen met tevreden klanten.</p>
+                    </div>
+
+                    <div>
+                      <h4 className="font-semibold mb-2">Hoe zit het met eigendom van de code?</h4>
+                      <p className="text-muted-foreground">Na volledige betaling is alle code en intellectueel eigendom 100% van jou. Je krijgt ook alle bronbestanden.</p>
+                    </div>
+
+                    <div>
+                      <h4 className="font-semibold mb-2">Welke technologieën gebruiken jullie?</h4>
+                      <p className="text-muted-foreground">We werken met moderne technologieën zoals React, Next.js, TypeScript, Node.js en verschillende databases afhankelijk van je projectbehoeften.</p>
+                    </div>
+
+                    <div>
+                      <h4 className="font-semibold mb-2">Hoe lang duurt een gemiddeld project?</h4>
+                      <p className="text-muted-foreground">Dit hangt af van de complexiteit, maar de meeste projecten duren tussen de 4-12 weken. We geven altijd een realistische planning vooraf.</p>
+                    </div>
                   </div>
                 </BottomSheet>
               </div>

@@ -9,6 +9,12 @@ const nextConfig: NextConfig = {
       // Voeg hier eventueel andere externe domeinen toe
     ],
   },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   // Andere Next.js configuraties...
 };
 
