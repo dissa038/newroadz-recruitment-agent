@@ -16,6 +16,7 @@ import TimeRangePicker from "@/components/ui/time-range-picker";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 import { contactSchema, type ContactFormData } from "@/lib/validations";
+import { BottomSheet } from "@/components/ui/BottomSheet";
 
 export function ContactForm() {
   const { toast } = useToast();
@@ -72,6 +73,26 @@ export function ContactForm() {
               <CardDescription className="text-lg">
                 Vul onderstaand formulier in en we nemen snel contact met je op
               </CardDescription>
+
+              {/* Silk BottomSheet voor FAQ */}
+              <div className="mt-4">
+                <BottomSheet
+                  trigger={
+                    <Button variant="outline" size="sm">
+                      ❓ Veelgestelde vragen
+                    </Button>
+                  }
+                  title="Veelgestelde Vragen"
+                  description="Alles wat je wilt weten over ons ontwikkelproces"
+                >
+                  <div className="space-y-6">
+                    <div>
+                      <h4 className="font-semibold mb-2">Hoe snel krijg ik een reactie?</h4>
+                      <p className="text-muted-foreground">We reageren binnen 24 uur op alle project aanvragen.</p>
+                    </div>
+                  </div>
+                </BottomSheet>
+              </div>
             </CardHeader>
             <CardContent className="p-8">
               <Form {...form}>
