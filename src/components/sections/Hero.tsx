@@ -4,11 +4,13 @@ import { useRef } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination } from "swiper/modules";
 import type { Swiper as SwiperType } from "swiper";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CustomSwiperPagination } from "@/components/ui/custom-swiper-pagination";
 import { useSwiperPosition } from "@/hooks/useSwiperPosition";
 import { useSwiperAutoHeight } from "@/hooks/useSwiperAutoHeight";
+import { fadeUp, staggerContainer, staggerChild } from "@/lib/animations";
 import { 
   ArrowRight, 
   Check, 
@@ -99,27 +101,44 @@ export function Hero() {
       <div className="container mx-auto px-4 md:px-6 lg:px-8 relative">
         <div className="space-y-20">
           {/* Hero Content */}
-          <div className="text-center space-y-8 max-w-4xl mx-auto">
+          <motion.div 
+            className="text-center space-y-8 max-w-4xl mx-auto"
+            variants={staggerContainer}
+            initial="initial"
+            animate="animate"
+          >
             <div className="space-y-6">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium">
+              <motion.div 
+                variants={staggerChild}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium"
+              >
                 <Sparkles className="w-4 h-4" />
                 Complete Next.js Template
-              </div>
+              </motion.div>
               
-              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight">
+              <motion.h1 
+                variants={staggerChild}
+                className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight"
+              >
                 Alles wat je nodig hebt om{" "}
                 <span className="bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">
                   snel te starten
                 </span>
-              </h1>
+              </motion.h1>
               
-              <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+              <motion.p 
+                variants={staggerChild}
+                className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed"
+              >
                 Een complete Next.js template met alle moderne tools en componenten. 
                 Klaar om direct te gebruiken voor je volgende project.
-              </p>
+              </motion.p>
             </div>
             
-            <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
+            <motion.div 
+              variants={staggerChild}
+              className="flex flex-col sm:flex-row gap-4 justify-center pt-4"
+            >
               <Button size="lg" className="gap-2 px-8 py-3 text-base">
                 Aan de slag
                 <ArrowRight className="h-4 w-4" />
@@ -128,16 +147,23 @@ export function Hero() {
                 <BookOpen className="h-4 w-4" />
                 Documentatie
               </Button>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
 
           {/* Highlight Cards - Desktop Grid */}
-          <div className="hidden md:grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+          <motion.div 
+            className="hidden md:grid md:grid-cols-3 gap-6 max-w-5xl mx-auto"
+            variants={staggerContainer}
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true, amount: 0.3 }}
+          >
             {highlights.map((highlight, index) => {
               const IconComponent = highlight.icon;
               return (
-                <div
+                <motion.div
                   key={index}
+                  variants={staggerChild}
                   className="group relative p-6 rounded-2xl bg-card/50 border border-border/50 hover:border-primary/20 hover:shadow-lg transition-all duration-300"
                 >
                   {/* Icon */}
@@ -154,10 +180,10 @@ export function Hero() {
                       {highlight.description}
                     </p>
                   </div>
-                </div>
+                </motion.div>
               );
             })}
-          </div>
+          </motion.div>
 
           {/* Highlight Cards - Mobile Swiper */}
           <div className="md:hidden max-w-sm mx-auto">
@@ -205,7 +231,13 @@ export function Hero() {
           </div>
 
           {/* Features List */}
-          <div className="max-w-4xl mx-auto">
+          <motion.div 
+            className="max-w-4xl mx-auto"
+            variants={fadeUp}
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true, amount: 0.3 }}
+          >
             <div className="text-center mb-12">
               <div className="flex items-center justify-center gap-3 mb-4">
                 <div className="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center">
@@ -221,7 +253,7 @@ export function Hero() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
               {features.map((feature, index) => (
                 <div 
-                  key={index} 
+                  key={index}
                   className="flex items-center gap-3 p-3 md:p-4 rounded-xl bg-card/30 border border-border/30 hover:bg-card/50 hover:border-border/50 transition-all duration-200"
                 >
                   <div className="w-6 h-6 rounded-full bg-green-500/20 flex items-center justify-center flex-shrink-0">
@@ -231,7 +263,7 @@ export function Hero() {
                 </div>
               ))}
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>

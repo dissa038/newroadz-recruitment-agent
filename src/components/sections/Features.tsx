@@ -4,9 +4,11 @@ import { useRef } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination } from "swiper/modules";
 import type { Swiper as SwiperType } from "swiper";
+import { motion } from "framer-motion";
 import { CustomSwiperPagination } from "@/components/ui/custom-swiper-pagination";
 import { useSwiperPosition } from "@/hooks/useSwiperPosition";
 import { useSwiperAutoHeight } from "@/hooks/useSwiperAutoHeight";
+import { fadeUp, staggerContainer, staggerChild } from "@/lib/animations";
 import {
   Code2,
   Database,
@@ -99,26 +101,48 @@ export function Features() {
     <section className="py-20 bg-gradient-to-b from-background to-muted/20">
       <div className="container mx-auto px-4 md:px-6 lg:px-8">
         {/* Header */}
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6">
+        <motion.div 
+          className="text-center mb-16"
+          variants={staggerContainer}
+          initial="initial"
+          whileInView="animate"
+          viewport={{ once: true, amount: 0.3 }}
+        >
+          <motion.div 
+            variants={staggerChild}
+            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6"
+          >
             <Zap className="h-4 w-4" />
             Features
-          </div>
-          <h2 className="text-3xl md:text-5xl font-bold tracking-tight mb-4">
+          </motion.div>
+          <motion.h2 
+            variants={staggerChild}
+            className="text-3xl md:text-5xl font-bold tracking-tight mb-4"
+          >
             Alles wat je nodig hebt
-          </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          </motion.h2>
+          <motion.p 
+            variants={staggerChild}
+            className="text-lg text-muted-foreground max-w-2xl mx-auto"
+          >
             Een complete toolkit voor moderne web development
-          </p>
-        </div>
+          </motion.p>
+        </motion.div>
 
         {/* Desktop Grid */}
-        <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <motion.div 
+          className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-8"
+          variants={staggerContainer}
+          initial="initial"
+          whileInView="animate"
+          viewport={{ once: true, amount: 0.3 }}
+        >
           {features.map((feature, index) => {
             const IconComponent = feature.icon;
             return (
-              <div
+              <motion.div
                 key={index}
+                variants={staggerChild}
                 className="group relative p-6 rounded-2xl bg-card border border-border/50 hover:border-primary/20 hover:shadow-lg transition-all duration-300"
               >
                 {/* Icon */}
@@ -145,10 +169,10 @@ export function Features() {
                 <div className="absolute bottom-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   <ArrowRight className="h-4 w-4 text-primary" />
                 </div>
-              </div>
+              </motion.div>
             );
           })}
-        </div>
+        </motion.div>
 
         {/* Mobile Swiper */}
         <div className="md:hidden">

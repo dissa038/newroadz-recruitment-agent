@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, type SubmitHandler } from "react-hook-form";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
@@ -17,6 +18,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { useToast } from "@/hooks/use-toast";
 import { contactSchema, type ContactFormData } from "@/lib/validations";
 import { BottomSheet } from "@/components/ui/BottomSheet";
+import { fadeUp, staggerContainer, staggerChild } from "@/lib/animations";
 
 export function ContactForm() {
   const { toast } = useToast();
@@ -58,16 +60,34 @@ export function ContactForm() {
       <div className="container mx-auto px-4 md:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
           {/* Header */}
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">
+          <motion.div 
+            className="text-center mb-16"
+            variants={staggerContainer}
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true, amount: 0.3 }}
+          >
+            <motion.h2 
+              variants={staggerChild}
+              className="text-4xl md:text-5xl font-bold mb-6"
+            >
               Laten we samen bouwen
-            </h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            </motion.h2>
+            <motion.p 
+              variants={staggerChild}
+              className="text-xl text-muted-foreground max-w-2xl mx-auto"
+            >
               Vertel ons over je project en ontdek hoe we je kunnen helpen met moderne web development.
-            </p>
-          </div>
+            </motion.p>
+          </motion.div>
 
-          <Card className="border-0 shadow-2xl bg-card/50 backdrop-blur-sm">
+          <motion.div
+            variants={fadeUp}
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true, amount: 0.3 }}
+          >
+            <Card className="border-0 shadow-2xl bg-card/50 backdrop-blur-sm">
             <CardHeader className="text-center pb-8">
               <CardTitle className="text-2xl">Project Aanvraag</CardTitle>
               <CardDescription className="text-lg">
@@ -517,6 +537,7 @@ export function ContactForm() {
               </Form>
             </CardContent>
           </Card>
+          </motion.div>
         </div>
       </div>
     </section>

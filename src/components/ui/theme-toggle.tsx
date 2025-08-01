@@ -76,7 +76,7 @@ export function ThemeToggle({ className }: ThemeToggleProps) {
           {isDark ? (
             <Moon className="w-4 h-4 text-foreground" strokeWidth={1.5} />
           ) : (
-            <Sun className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
+            <Sun className="w-4 h-4 text-white" strokeWidth={1.5} />
           )}
         </motion.div>
         <motion.div
