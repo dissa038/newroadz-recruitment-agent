@@ -5,15 +5,15 @@ import { emailService } from '@/lib/email';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    
+
     // Valideer de form data
     const validationResult = contactSchema.safeParse(body);
-    
+
     if (!validationResult.success) {
       return NextResponse.json(
-        { 
-          error: 'Validatie gefaald', 
-          details: validationResult.error.errors 
+        {
+          error: 'Validatie gefaald',
+          details: validationResult.error.issues
         },
         { status: 400 }
       );
@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
 
     // Verstuur notificatie email naar jezelf
     const notificationSent = await emailService.sendContactNotification(emailData);
-    
+
     if (!notificationSent) {
       console.error('Failed to send notification email');
       return NextResponse.json(
@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
 
     // Verstuur bevestiging naar de klant
     const confirmationSent = await emailService.sendContactConfirmation(emailData);
-    
+
     if (!confirmationSent) {
       console.error('Failed to send confirmation email');
       // We gaan door, want de notificatie is wel verstuurd
@@ -88,7 +88,7 @@ export async function GET() {
     };
 
     const result = await emailService.sendContactNotification(testEmailData);
-    
+
     return NextResponse.json({
       success: result,
       message: result ? 'Test email verstuurd!' : 'Test email gefaald',
