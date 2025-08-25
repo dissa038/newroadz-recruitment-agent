@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { useAuth } from "@/providers/auth-provider";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { MegaMenu } from "@/components/ui/mega-menu";
@@ -24,11 +25,15 @@ import {
   RocketIcon,
   SettingsIcon,
   UsersIcon,
-  TrendingUpIcon
+  TrendingUpIcon,
+  LogOut,
+  User
 } from "lucide-react";
+import Link from "next/link";
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const { user, signOut, isAuthenticated } = useAuth();
 
   const componentsMenuData = {
     trigger: "Components",
@@ -260,6 +265,24 @@ export function Navbar() {
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center space-x-4">
             <ThemeToggle />
+            {isAuthenticated ? (
+              <div className="flex items-center gap-3">
+                <span className="text-sm text-muted-foreground">
+                  {user?.email}
+                </span>
+                <Button variant="outline" size="sm" onClick={signOut}>
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Uitloggen
+                </Button>
+              </div>
+            ) : (
+              <Button size="sm" asChild>
+                <Link href="/login">
+                  <User className="h-4 w-4 mr-2" />
+                  Inloggen
+                </Link>
+              </Button>
+            )}
             <Button size="sm" className="gap-2">
               <Github className="h-4 w-4" />
               GitHub
@@ -268,6 +291,17 @@ export function Navbar() {
 
           {/* Mobile Menu */}
           <div className="flex md:hidden items-center space-x-2">
+            {isAuthenticated ? (
+              <Button variant="ghost" size="sm" onClick={signOut}>
+                <LogOut className="h-4 w-4" />
+              </Button>
+            ) : (
+              <Button variant="ghost" size="sm" asChild>
+                <Link href="/login">
+                  <User className="h-4 w-4" />
+                </Link>
+              </Button>
+            )}
             <ThemeToggle />
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
               <SheetTrigger asChild>

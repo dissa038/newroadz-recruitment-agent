@@ -1,68 +1,79 @@
 'use client'
 
-import { useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
+import { useAuth } from '@/providers/auth-provider'
 import { type User } from '@supabase/supabase-js'
+import { Button } from '@/components/ui/button'
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
+import { LogOut, Loader2, User as UserIcon } from 'lucide-react'
 
 export default function AccountForm({ user }: { user: User | null }) {
-  const supabase = createClient()
-  const [loading, setLoading] = useState(false)
+  const { signOut, loading } = useAuth()
 
   const handleSignOut = async () => {
-    setLoading(true)
-    await supabase.auth.signOut()
-    window.location.href = '/login'
+    await signOut()
+  }
+
+  if (!user) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-center">
+          <UserIcon className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+          <h2 className="text-2xl font-bold mb-2">No user found</h2>
+          <p className="text-muted-foreground">There was a problem loading your account.</p>
+        </div>
+      </div>
+    )
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50">
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Your Account
-          </h2>
-        </div>
-        
-        <div className="mt-8 space-y-6">
-          <div className="rounded-md bg-white p-6 shadow">
+    <div className="min-h-screen bg-background p-4">
+      <div className="container mx-auto max-w-md py-8">
+        <Card>
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl font-bold">Your Account</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="block text-sm font-medium text-muted-foreground mb-1">
                   Email
                 </label>
-                <div className="mt-1 text-sm text-gray-900">
-                  {user?.email}
+                <div className="text-sm font-medium">
+                  {user.email}
                 </div>
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="block text-sm font-medium text-muted-foreground mb-1">
                   User ID
                 </label>
-                <div className="mt-1 text-sm text-gray-500 font-mono">
-                  {user?.id}
+                <div className="text-xs font-mono text-muted-foreground break-all">
+                  {user.id}
                 </div>
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="block text-sm font-medium text-muted-foreground mb-1">
                   Created
                 </label>
-                <div className="mt-1 text-sm text-gray-500">
-                  {user?.created_at ? new Date(user.created_at).toLocaleDateString() : 'N/A'}
+                <div className="text-sm text-muted-foreground">
+                  {user.created_at ? new Date(user.created_at).toLocaleDateString() : 'N/A'}
                 </div>
               </div>
             </div>
-          </div>
 
-          <button
-            onClick={handleSignOut}
-            disabled={loading}
-            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50"
-          >
-            {loading ? 'Signing out...' : 'Sign out'}
-          </button>
-        </div>
+            <Button 
+              variant="destructive" 
+              onClick={handleSignOut}
+              disabled={loading}
+              className="w-full"
+            >
+              {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              <LogOut className="mr-2 h-4 w-4" />
+              Sign Out
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     </div>
   )

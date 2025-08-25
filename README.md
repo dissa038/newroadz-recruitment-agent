@@ -52,10 +52,16 @@ npm install
 cp .env.local.example .env.local
 ```
 
-Vul je environment variables in:
-- **Supabase**: [supabase.com](https://supabase.com)
-- **Brevo**: [brevo.com](https://brevo.com)
-- **Google Gemini**: [makersuite.google.com](https://makersuite.google.com)
+**Required for Authentication:**
+1. Go to [supabase.com](https://supabase.com) and create a new project
+2. Go to Project Settings → API → Copy your:
+   - `Project URL` → `NEXT_PUBLIC_SUPABASE_URL`
+   - `anon/public key` → `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+3. Add these to your `.env.local` file
+
+**Optional services:**
+- **Brevo**: [brevo.com](https://brevo.com) for email functionality
+- **Google Gemini**: [makersuite.google.com](https://makersuite.google.com) for AI features
 
 ### 3. Run Development Server
 ```bash
