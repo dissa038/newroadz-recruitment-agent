@@ -1,49 +1,72 @@
-# 🚀 Next.js Complete Template
+# 🚀 Newroadz Recruitment Agent
 
-Een complete, moderne Next.js template met alles wat je nodig hebt om direct te beginnen met het bouwen van professionele web applicaties.
+AI-powered recruitment platform for sourcing and managing top talent with advanced search, automated screening, and intelligent matching.
 
 ## ✨ Features
 
+### 🤖 **AI-Powered Recruitment**
+- **Semantic Search** - Find candidates using natural language queries
+- **Intelligent Matching** - AI-driven candidate-to-job matching
+- **Automated Screening** - Smart CV analysis and skill extraction
+- **Predictive Analytics** - Success probability scoring
+
+### 📊 **Candidate Management**
+- **Comprehensive Profiles** - Detailed candidate information
+- **Bulk CV Upload** - Process multiple CVs simultaneously
+- **Smart Tagging** - Automated skill and experience detection
+- **Real-time Updates** - Live candidate status tracking
+
+### 🔗 **Integrations**
+- **Apollo.io** - Lead generation and contact scraping
+- **Loxo** - ATS synchronization and workflow integration
+- **Email Automation** - Outreach and follow-up campaigns
+- **Calendar Integration** - Interview scheduling
+
 ### 🔧 **Core Stack**
 - **Next.js 15** - App Router, Server Components, TypeScript
-- **React 19** - Nieuwste React features
+- **React 19** - Latest React features
 - **Tailwind CSS** - Utility-first CSS framework
-- **shadcn/ui** - Moderne, toegankelijke UI componenten
+- **shadcn/ui** - Modern, accessible UI components
 
 ### 🔐 **Authentication & Database**
 - **Supabase** - Database, Authentication, Storage
-- **Row Level Security** - Veilige data toegang
+- **Row Level Security** - Secure data access
 - **Real-time subscriptions** - Live data updates
+- **Multi-tenant Architecture** - Organization-based access control
 
 ### 🤖 **AI Integration**
-- **Google Gemini AI** - Text generatie en AI features
-- **Ready-to-use API routes** - Direct te gebruiken AI endpoints
+- **Google Gemini AI** - Advanced language processing
+- **Semantic Search** - Natural language candidate queries
+- **Skill Extraction** - Automated CV parsing and analysis
+- **Match Scoring** - AI-powered candidate ranking
 
-### 📧 **Email & Communication**
-- **Brevo** - Transactionele emails
-- **Contact formulieren** - Met validatie en error handling
+### 📧 **Communication & Automation**
+- **Brevo** - Transactional and marketing emails
+- **Contact Forms** - Candidate and client inquiries
+- **Email Templates** - Customizable outreach campaigns
+- **Automated Workflows** - Streamlined recruitment processes
 
 ### 🎨 **UI & UX**
-- **Dark/Light mode** - Automatische theme switching
+- **Dark/Light mode** - Automatic theme switching
 - **Responsive design** - Mobile-first approach
 - **Loading states** - Skeleton loaders
-- **Error handling** - 404 en error pages
+- **Error handling** - 404 and error pages
 - **Toast notifications** - User feedback
 
 ### 📝 **Forms & Validation**
-- **React Hook Form** - Performante formulieren
-- **Zod** - Type-safe validatie
-- **Error handling** - Gebruiksvriendelijke foutmeldingen
+- **React Hook Form** - High-performance forms
+- **Zod** - Type-safe validation
+- **Error handling** - User-friendly error messages
 
 ### 🎭 **Animations**
-- **Framer Motion** - Smooth animaties en transities
+- **Framer Motion** - Smooth animations and transitions
 
 ## 🚀 Quick Start
 
 ### 1. Clone & Install
 ```bash
-git clone <your-repo>
-cd next-js-template
+git clone https://github.com/newroadz/recruitment-agent
+cd newroadz-recruitment-agent
 npm install
 ```
 
@@ -52,16 +75,20 @@ npm install
 cp .env.local.example .env.local
 ```
 
-**Required for Authentication:**
+**Required for Core Functionality:**
 1. Go to [supabase.com](https://supabase.com) and create a new project
 2. Go to Project Settings → API → Copy your:
    - `Project URL` → `NEXT_PUBLIC_SUPABASE_URL`
    - `anon/public key` → `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 3. Add these to your `.env.local` file
 
-**Optional services:**
-- **Brevo**: [brevo.com](https://brevo.com) for email functionality
-- **Google Gemini**: [makersuite.google.com](https://makersuite.google.com) for AI features
+**Required for AI Features:**
+- **Google Gemini**: [makersuite.google.com](https://makersuite.google.com) for AI-powered search and matching
+
+**Optional Integrations:**
+- **Brevo**: [brevo.com](https://brevo.com) for email automation
+- **Apollo.io**: API key for candidate sourcing
+- **Loxo**: Integration for ATS synchronization
 
 ### 3. Run Development Server
 ```bash

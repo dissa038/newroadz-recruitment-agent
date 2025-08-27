@@ -433,7 +433,9 @@ export function Modal({ isOpen, onClose, children, className }: ModalProps) {
 
       // Add ESC listener - only for top modal
       const handleKeyDown = (e: KeyboardEvent) => {
-        if (e.key === "Escape" && isTopModal(modalId.current)) onClose();
+        if (e.key === "Escape" && isTopModal(modalId.current)) {
+          smoothCloseModal();
+        }
       };
       document.addEventListener("keydown", handleKeyDown);
 
@@ -479,6 +481,15 @@ export function Modal({ isOpen, onClose, children, className }: ModalProps) {
     }
   };
 
+  const smoothCloseModal = () => {
+    if (!isOpen || isClosing.current || !isTopModal(modalId.current)) return;
+    if (isMobile) {
+      closeModal();
+    } else {
+      onClose();
+    }
+  };
+
   // Mobile version
   if (isMobile) {
     if (!isOpen) return null;
@@ -502,7 +513,7 @@ export function Modal({ isOpen, onClose, children, className }: ModalProps) {
             onClick={(e) => e.stopPropagation()}
           >
             {/* Mobile Handle */}
-            <div className="absolute left-0 right-0 top-0 h-14 cursor-grab active:cursor-grabbing modal-handle z-[9999]">
+            <div className="absolute left-0 right-0 top-0 h-4 cursor-grab active:cursor-grabbing modal-handle z-[9999]">
               <div className="absolute left-1/2 -translate-x-1/2 top-[5px] h-1.5 w-16 rounded-full bg-gray-300 dark:bg-gray-600 z-[9999999999]" />
             </div>
 
@@ -571,7 +582,7 @@ export function Modal({ isOpen, onClose, children, className }: ModalProps) {
               >
                 {/* Close Button */}
                 <button
-                  onClick={handleBackdropClick}
+                  onClick={smoothCloseModal}
                   className={cn(
                     "absolute right-4 top-4 p-2 rounded-lg z-50",
                     "hover:bg-muted transition-colors",
