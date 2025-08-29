@@ -128,10 +128,7 @@ export function ChatItem({
                   }`}>
                     {getConversationTitle(conversation)}
                   </h3>
-                  {conversation.auto_title_generated && (
-                    <div className="w-1.5 h-1.5 rounded-full bg-blue-500/60 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                         title="AI gegenereerde titel" />
-                  )}
+                  {/* Removed blue hover dot next to title */}
                 </div>
                 <div className="flex items-center gap-2">
                   <span className={`text-xs px-2 py-1 rounded-full transition-opacity ${
@@ -193,11 +190,8 @@ export function ChatItem({
           )}
         </>
       ) : (
-        <div className="flex justify-center">
-          <div className={`w-2 h-2 rounded-full ${
-            isSelected ? 'bg-primary' : 'bg-muted-foreground/50'
-          }`} />
-        </div>
+        // When collapsed, hide individual chat dots entirely
+        <div className="h-2" />
       )}
     </div>
   )

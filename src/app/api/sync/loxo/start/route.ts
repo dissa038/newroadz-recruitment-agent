@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/server'
 import { deduplicationEngine } from '@/lib/database/deduplication'
 import { embeddingJobService } from '@/lib/database/helpers'
 import { loxoLogger } from '@/lib/logger'
@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
       syncJobs = false
     } = options
     
-    if (!process.env.LOXO_API_KEY || !process.env.LOXO_API_URL) {
+    if (!process.env.LOXO_API_KEY || !process.env.LOXO_API_URL || !process.env.LOXO_AGENCY_SLUG) {
       loxoLogger.error('Missing Loxo API configuration')
       return NextResponse.json(
         { success: false, error: 'Loxo API configuration missing' },
@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
 
     loxoLogger.info({ syncType, lastSyncTimestamp, batchSize }, 'Starting Loxo sync')
 
-    const supabase = await createClient()
+    const supabase = createServiceClient()
 
     // Create sync run record
     const { data: syncRun, error: runError } = await supabase
@@ -95,7 +95,7 @@ export async function POST(request: NextRequest) {
  * Background process for Loxo sync
  */
 async function processLoxoSync(syncRunId: string, syncType: string, lastSyncTimestamp?: string, batchSize = 500, options: any = {}) {
-  const supabase = await createClient()
+  const supabase = createServiceClient()
   const log = loxoLogger.child({ syncRunId, syncType })
   
   try {
@@ -109,17 +109,21 @@ async function processLoxoSync(syncRunId: string, syncType: string, lastSyncTime
       errors: 0
     }
 
-    let page = 1
     let hasMore = true
+    let scrollId: string | null = null
 
     while (hasMore) {
       try {
-        // Build Loxo API URL
-        let apiUrl = `${process.env.LOXO_API_URL}/contacts?page=${page}&per_page=${batchSize}`
+        // Build Loxo API URL with scroll-based pagination
+        let apiUrl = `${process.env.LOXO_API_URL}/${process.env.LOXO_AGENCY_SLUG}/people`
         
-        if (syncType === 'incremental' && lastSyncTimestamp) {
-          apiUrl += `&updated_after=${lastSyncTimestamp}`
+        if (scrollId) {
+          apiUrl += `?scroll_id=${scrollId}`
+        } else if (syncType === 'incremental' && lastSyncTimestamp) {
+          apiUrl += `?updated_after=${lastSyncTimestamp}`
         }
+
+        log.info({ apiUrl, scrollId, batchSize }, 'Making Loxo API request')
 
         // Fetch data from Loxo API
         const response = await fetch(apiUrl, {
@@ -130,17 +134,28 @@ async function processLoxoSync(syncRunId: string, syncType: string, lastSyncTime
         })
 
         if (!response.ok) {
-          throw new Error(`Loxo API error: ${response.status} ${response.statusText}`)
+          const errorText = await response.text()
+          log.error({ 
+            status: response.status, 
+            statusText: response.statusText, 
+            errorText,
+            apiUrl 
+          }, 'Loxo API request failed')
+          throw new Error(`Loxo API error: ${response.status} ${response.statusText} - ${errorText}`)
         }
 
         const data = await response.json()
-        const contacts = data.contacts || data.data || []
+        log.info({ dataKeys: Object.keys(data), dataLength: data.people?.length }, 'Loxo API response received')
+        const contacts = data.people || []
         
         if (!contacts.length) {
           hasMore = false
           break
         }
 
+        // Update scroll_id for next page
+        scrollId = data.scroll_id || null
+        
         results.total += contacts.length
 
         // Process each contact
@@ -187,27 +202,31 @@ async function processLoxoSync(syncRunId: string, syncType: string, lastSyncTime
 
           } catch (error) {
             results.errors++
-            log.error({ error, contactId: contact.id }, 'Failed to process contact')
+            log.error({ error: error.message, stack: error.stack, contactId: contact.id }, 'Failed to process contact')
           }
         }
 
         log.info({ 
-          page,
+          scrollId,
           processed: results.processed,
           total: results.total 
         }, 'Sync progress')
 
         // Check if there are more pages
-        hasMore = contacts.length === batchSize
-        page++
+        hasMore = !!scrollId && contacts.length > 0
 
         // Rate limiting - wait between requests
         await new Promise(resolve => setTimeout(resolve, 100))
 
-      } catch (error) {
-        log.error({ error, page }, 'Error processing Loxo sync page')
-        hasMore = false
-      }
+              } catch (error) {
+          log.error({
+            error: error.message,
+            stack: error.stack,
+            scrollId,
+            apiUrl: `${process.env.LOXO_API_URL}/${process.env.LOXO_AGENCY_SLUG}/people`
+          }, 'Error processing Loxo sync page')
+          hasMore = false
+        }
     }
 
     // Update sync run with results

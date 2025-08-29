@@ -52,21 +52,19 @@ export function ChatSidebar({
       <div className="p-4 border-b bg-card/50 backdrop-blur-sm">
         <div className="flex items-center justify-between">
           {!sidebarCollapsed && (
-            <>
-              <h2 className="font-semibold text-lg">Chats</h2>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={onCreateNewConversation}
-                disabled={shouldDisableNewChat}
-                className="h-8 w-8 p-0 hover:bg-primary hover:text-primary-foreground disabled:opacity-50"
-                title={shouldDisableNewChat ? "Je bent al in een lege chat" : "Nieuwe chat"}
-              >
-                <Plus className="h-4 w-4" />
-              </Button>
-            </>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onCreateNewConversation}
+              disabled={shouldDisableNewChat}
+              className="h-8 disabled:opacity-50"
+              title={shouldDisableNewChat ? "Je bent al in een lege chat" : "Nieuwe chat"}
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Nieuwe chat
+            </Button>
           )}
-          
+
           {/* Collapse/Expand Button */}
           <Button
             variant="ghost"

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { ProfileDropdown } from "@/components/ui/profile-dropdown";
 import { 
   MenuIcon, 
   LogOut,
@@ -23,10 +24,12 @@ import {
   RefreshCw
 } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const { user, signOut, isAuthenticated } = useAuth();
+  const pathname = usePathname();
 
   return (
     <nav className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -44,28 +47,28 @@ export function Navbar() {
           </div>
 
           {/* Desktop Menu */}
-          <div className="hidden md:flex items-center space-x-6">
-            <Link href="/" className="text-sm font-medium hover:text-primary transition-colors flex items-center gap-1">
+          <div className="hidden md:flex items-center space-x-2 lg:space-x-4">
+            <Link href="/" className={`text-sm font-medium px-2 py-1 rounded-md transition-colors flex items-center gap-1 ${pathname === '/' ? 'bg-muted' : 'hover:bg-muted'}`}>
               <Home className="h-4 w-4" />
               Dashboard
             </Link>
-            <Link href="/candidates" className="text-sm font-medium hover:text-primary transition-colors flex items-center gap-1">
+            <Link href="/candidates" className={`text-sm font-medium px-2 py-1 rounded-md transition-colors flex items-center gap-1 ${pathname.startsWith('/candidates') ? 'bg-muted' : 'hover:bg-muted'}`}>
               <Users className="h-4 w-4" />
               Candidates
             </Link>
-            <Link href="/chat" className="text-sm font-medium hover:text-primary transition-colors flex items-center gap-1">
+            <Link href="/chat" className={`text-sm font-medium px-2 py-1 rounded-md transition-colors flex items-center gap-1 ${pathname.startsWith('/chat') ? 'bg-muted' : 'hover:bg-muted'}`}>
               <MessageSquare className="h-4 w-4" />
               AI Search
             </Link>
-            <Link href="/scraping" className="text-sm font-medium hover:text-primary transition-colors flex items-center gap-1">
+            <Link href="/scraping" className={`text-sm font-medium px-2 py-1 rounded-md transition-colors flex items-center gap-1 ${pathname.startsWith('/scraping') ? 'bg-muted' : 'hover:bg-muted'}`}>
               <Database className="h-4 w-4" />
               Apollo Scraping
             </Link>
-            <Link href="/sync" className="text-sm font-medium hover:text-primary transition-colors flex items-center gap-1">
+            <Link href="/sync" className={`text-sm font-medium px-2 py-1 rounded-md transition-colors flex items-center gap-1 ${pathname.startsWith('/sync') ? 'bg-muted' : 'hover:bg-muted'}`}>
               <RefreshCw className="h-4 w-4" />
               Loxo Sync
             </Link>
-            <Link href="/candidates/upload" className="text-sm font-medium hover:text-primary transition-colors flex items-center gap-1">
+            <Link href="/candidates/upload" className={`text-sm font-medium px-2 py-1 rounded-md transition-colors flex items-center gap-1 ${pathname.startsWith('/candidates/upload') ? 'bg-muted' : 'hover:bg-muted'}`}>
               <Upload className="h-4 w-4" />
               Upload CVs
             </Link>
@@ -75,17 +78,9 @@ export function Navbar() {
           <div className="hidden md:flex items-center space-x-4">
             <ThemeToggle />
             {isAuthenticated ? (
-              <div className="flex items-center gap-3">
-                <span className="text-sm text-muted-foreground">
-                  {user?.email}
-                </span>
-                <Button variant="outline" size="sm" onClick={signOut}>
-                  <LogOut className="h-4 w-4 mr-2" />
-                  Sign Out
-                </Button>
-              </div>
+              <ProfileDropdown />
             ) : (
-              <Button size="sm" asChild>
+              <Button size="sm" asChild className="hover:bg-muted">
                 <Link href="/login">
                   <User className="h-4 w-4 mr-2" />
                   Sign In
@@ -96,17 +91,6 @@ export function Navbar() {
 
           {/* Mobile Menu */}
           <div className="flex md:hidden items-center space-x-2">
-            {isAuthenticated ? (
-              <Button variant="ghost" size="sm" onClick={signOut}>
-                <LogOut className="h-4 w-4" />
-              </Button>
-            ) : (
-              <Button variant="ghost" size="sm" asChild>
-                <Link href="/login">
-                  <User className="h-4 w-4" />
-                </Link>
-              </Button>
-            )}
             <ThemeToggle />
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
               <SheetTrigger asChild>
@@ -133,7 +117,7 @@ export function Navbar() {
                       <div className="space-y-1">
                         <Link
                           href="/"
-                          className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-accent transition-colors"
+                          className={`flex items-center gap-3 px-3 py-2 rounded-md transition-colors ${pathname === '/' ? 'bg-muted' : 'hover:bg-muted'}`}
                           onClick={() => setIsOpen(false)}
                         >
                           <Home className="h-4 w-4" />
@@ -141,7 +125,7 @@ export function Navbar() {
                         </Link>
                         <Link
                           href="/candidates"
-                          className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-accent transition-colors"
+                          className={`flex items-center gap-3 px-3 py-2 rounded-md transition-colors ${pathname.startsWith('/candidates') ? 'bg-muted' : 'hover:bg-muted'}`}
                           onClick={() => setIsOpen(false)}
                         >
                           <Users className="h-4 w-4" />
@@ -149,7 +133,7 @@ export function Navbar() {
                         </Link>
                         <Link
                           href="/chat"
-                          className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-accent transition-colors"
+                          className={`flex items-center gap-3 px-3 py-2 rounded-md transition-colors ${pathname.startsWith('/chat') ? 'bg-muted' : 'hover:bg-muted'}`}
                           onClick={() => setIsOpen(false)}
                         >
                           <MessageSquare className="h-4 w-4" />
@@ -157,7 +141,7 @@ export function Navbar() {
                         </Link>
                         <Link
                           href="/scraping"
-                          className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-accent transition-colors"
+                          className={`flex items-center gap-3 px-3 py-2 rounded-md transition-colors ${pathname.startsWith('/scraping') ? 'bg-muted' : 'hover:bg-muted'}`}
                           onClick={() => setIsOpen(false)}
                         >
                           <Database className="h-4 w-4" />
@@ -165,67 +149,83 @@ export function Navbar() {
                         </Link>
                         <Link
                           href="/sync"
-                          className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-accent transition-colors"
+                          className={`flex items-center gap-3 px-3 py-2 rounded-md transition-colors ${pathname.startsWith('/sync') ? 'bg-muted' : 'hover:bg-muted'}`}
                           onClick={() => setIsOpen(false)}
                         >
                           <RefreshCw className="h-4 w-4" />
                           <span>Loxo Sync</span>
                         </Link>
-                      </div>
-                    </div>
-
-                    <Separator />
-
-                    {/* Actions */}
-                    <div className="space-y-3">
-                      <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
-                        Quick Actions
-                      </h3>
-                      <div className="space-y-1">
                         <Link
                           href="/candidates/upload"
-                          className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-accent transition-colors"
+                          className={`flex items-center gap-3 px-3 py-2 rounded-md transition-colors ${pathname.startsWith('/candidates/upload') ? 'bg-muted' : 'hover:bg-muted'}`}
                           onClick={() => setIsOpen(false)}
                         >
                           <Upload className="h-4 w-4" />
-                          <div>
-                            <div className="font-medium">Upload CVs</div>
-                            <div className="text-xs text-muted-foreground">Add candidates via CV upload</div>
-                          </div>
-                        </Link>
-                        <Link
-                          href="/sync"
-                          className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-accent transition-colors"
-                          onClick={() => setIsOpen(false)}
-                        >
-                          <RefreshCw className="h-4 w-4" />
-                          <div>
-                            <div className="font-medium">Loxo Sync</div>
-                            <div className="text-xs text-muted-foreground">Import from Loxo database</div>
-                          </div>
-                        </Link>
-                        <Link
-                          href="/scraping"
-                          className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-accent transition-colors"
-                          onClick={() => setIsOpen(false)}
-                        >
-                          <Database className="h-4 w-4" />
-                          <div>
-                            <div className="font-medium">Apollo Scraper</div>
-                            <div className="text-xs text-muted-foreground">Scrape candidates from Apollo</div>
-                          </div>
+                          <span>Upload CVs</span>
                         </Link>
                       </div>
                     </div>
+
+                    {/* Quick Actions section removed to avoid duplicates; merged into Main Menu */}
+
+                    {/* Account Section */}
+                    {isAuthenticated && (
+                      <div className="space-y-3">
+                        <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
+                          Account
+                        </h3>
+                        <div className="space-y-1">
+                          <Link
+                            href="/profile"
+                            className={`flex items-center gap-3 px-3 py-2 rounded-md transition-colors ${pathname.startsWith('/profile') ? 'bg-muted' : 'hover:bg-muted'}`}
+                            onClick={() => setIsOpen(false)}
+                          >
+                            <User className="h-4 w-4" />
+                            <span>Profiel</span>
+                          </Link>
+                          <Link
+                            href="/settings"
+                            className={`flex items-center gap-3 px-3 py-2 rounded-md transition-colors ${pathname.startsWith('/settings') ? 'bg-muted' : 'hover:bg-muted'}`}
+                            onClick={() => setIsOpen(false)}
+                          >
+                            <Settings className="h-4 w-4" />
+                            <span>Instellingen</span>
+                          </Link>
+                          <button
+                            className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-muted transition-colors w-full text-left text-red-600"
+                            onClick={() => {
+                              setIsOpen(false);
+                              signOut();
+                            }}
+                          >
+                            <LogOut className="h-4 w-4" />
+                            <span>Uitloggen</span>
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {!isAuthenticated && (
+                      <div className="space-y-3">
+                        <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
+                          Account
+                        </h3>
+                        <div className="space-y-1">
+                          <Link
+                            href="/login"
+                            className={`flex items-center gap-3 px-3 py-2 rounded-md transition-colors ${pathname.startsWith('/login') ? 'bg-muted' : 'hover:bg-muted'}`}
+                            onClick={() => setIsOpen(false)}
+                          >
+                            <User className="h-4 w-4" />
+                            <span>Inloggen</span>
+                          </Link>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
 
-                {/* Footer */}
-                <div className="flex-shrink-0 p-6 pt-4 border-t bg-background">
-                  <div className="text-xs text-muted-foreground text-center">
-                    Powered by AI • Built with ❤️
-                  </div>
-                </div>
+                {/* Footer removed per request */}
               </SheetContent>
             </Sheet>
           </div>

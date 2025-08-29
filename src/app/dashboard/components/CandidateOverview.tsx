@@ -27,15 +27,15 @@ type Candidate = {
 const getSourceStyle = (source: string) => {
   switch (source) {
     case 'apollo':
-      return { bg: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300', gradient: 'from-blue-500 to-cyan-500' }
+      return { bg: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300' }
     case 'loxo':
-      return { bg: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300', gradient: 'from-green-500 to-emerald-500' }
+      return { bg: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' }
     case 'cv_upload':
-      return { bg: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300', gradient: 'from-purple-500 to-violet-500' }
+      return { bg: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300' }
     case 'manual':
-      return { bg: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300', gradient: 'from-orange-500 to-amber-500' }
+      return { bg: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300' }
     default:
-      return { bg: 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-300', gradient: 'from-gray-500 to-slate-500' }
+      return { bg: 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-300' }
   }
 }
 
@@ -68,11 +68,11 @@ export function CandidateOverview() {
   }
 
   return (
-    <Card className="relative overflow-hidden">
+    <Card>
       <CardHeader className="flex flex-row items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg">
-            <Users className="h-5 w-5 text-white" />
+          <div className="p-2 rounded-md bg-muted">
+            <Users className="h-5 w-5" />
           </div>
           <div>
             <CardTitle>Recent Candidates</CardTitle>
@@ -92,7 +92,7 @@ export function CandidateOverview() {
         {loading ? (
           <div className="space-y-4">
             {[...Array(3)].map((_, i) => (
-              <div key={i} className="flex items-center space-x-4 p-4 border rounded-lg">
+              <div key={i} className="flex items-center gap-4 p-4 border rounded-md">
                 <Skeleton className="h-12 w-12 rounded-full" />
                 <div className="flex-1 space-y-2">
                   <div className="flex items-center justify-between">
@@ -115,9 +115,7 @@ export function CandidateOverview() {
           </div>
         ) : error ? (
           <div className="text-center py-12">
-            <div className="w-16 h-16 bg-gradient-to-br from-red-100 to-red-200 dark:from-red-900/30 dark:to-red-800/30 rounded-full flex items-center justify-center mx-auto mb-4">
-              <ExternalLink className="h-8 w-8 text-red-500" />
-            </div>
+            <ExternalLink className="h-8 w-8 text-muted-foreground mx-auto mb-4" />
             <p className="text-muted-foreground mb-4">{error}</p>
             <Button variant="outline" size="sm" onClick={loadRecentCandidates}>
               Try Again
@@ -125,15 +123,13 @@ export function CandidateOverview() {
           </div>
         ) : candidates.length === 0 ? (
           <div className="text-center py-12">
-            <div className="w-20 h-20 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900 rounded-full flex items-center justify-center mx-auto mb-6">
-              <Building className="h-10 w-10 text-muted-foreground" />
-            </div>
+            <Building className="h-10 w-10 text-muted-foreground mx-auto mb-6" />
             <h3 className="text-xl font-semibold mb-2">No candidates yet</h3>
             <p className="text-muted-foreground mb-8 max-w-md mx-auto">
               Start building your talent pipeline by uploading CVs, importing from Apollo, or syncing with Loxo
             </p>
             <div className="flex gap-3 justify-center">
-              <Button size="sm" asChild className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700">
+              <Button size="sm" asChild>
                 <Link href="/candidates/upload">Upload CVs</Link>
               </Button>
               <Button variant="outline" size="sm" asChild>
@@ -147,21 +143,16 @@ export function CandidateOverview() {
               const sourceStyle = getSourceStyle(candidate.source)
               return (
                 <div key={candidate.id} className="group">
-                  <div className="relative p-4 border border-gray-200 dark:border-gray-700 rounded-xl hover:shadow-lg transition-all duration-300 hover:scale-[1.02] bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
+                  <div className="relative p-4 border rounded-md hover:bg-muted transition-colors">
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex items-center space-x-3">
                         <div className="relative">
-                          <Avatar className="h-12 w-12 ring-2 ring-offset-2 ring-gray-200 dark:ring-gray-700">
+                          <Avatar className="h-12 w-12">
                             <AvatarImage src={candidate.photo_url} />
-                            <AvatarFallback className="bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900">
+                            <AvatarFallback>
                               {candidate.full_name?.split(' ').map((n: string) => n[0]).join('') || '??'}
                             </AvatarFallback>
                           </Avatar>
-                          {index < 2 && (
-                            <div className="absolute -top-1 -right-1 p-1 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full">
-                              <Star className="h-3 w-3 text-white" />
-                            </div>
-                          )}
                         </div>
                         <div className="min-w-0 flex-1">
                           <p className="font-semibold text-foreground truncate">{candidate.full_name}</p>
@@ -205,15 +196,12 @@ export function CandidateOverview() {
                           <span className="text-xs text-muted-foreground">+{candidate.skills.length - 2}</span>
                         )}
                       </div>
-                      <Button variant="ghost" size="sm" asChild className="opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Button variant="ghost" size="sm" asChild className="opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                         <Link href={`/candidates/${candidate.id}`}>
                           <ExternalLink className="h-4 w-4" />
                         </Link>
                       </Button>
                     </div>
-                    
-                    {/* Decorative gradient */}
-                    <div className={`absolute top-0 right-0 w-20 h-20 bg-gradient-to-br ${sourceStyle.gradient} opacity-5 rounded-full -translate-y-10 translate-x-10`} />
                   </div>
                 </div>
               )
@@ -221,9 +209,6 @@ export function CandidateOverview() {
           </div>
         )}
       </CardContent>
-      
-      {/* Background decoration */}
-      <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-indigo-500/5 to-purple-500/5 rounded-full -translate-y-16 translate-x-16" />
     </Card>
   )
 }

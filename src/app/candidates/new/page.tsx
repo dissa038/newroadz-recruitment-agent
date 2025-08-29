@@ -117,14 +117,14 @@ export default function NewCandidatePage() {
   return (
     <div className="container mx-auto py-8 max-w-4xl">
       {/* Header */}
-      <div className="flex items-center gap-4 mb-8">
-        <Link href="/candidates">
-          <Button variant="outline" size="sm">
+      <div className="flex flex-col gap-4 mb-8 sm:flex-row sm:items-center">
+        <Link href="/candidates" className="sm:order-1 order-2">
+          <Button variant="outline" size="sm" className="w-full sm:w-auto">
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Candidates
           </Button>
         </Link>
-        <div>
+        <div className="order-1 sm:order-2">
           <h1 className="text-3xl font-bold flex items-center gap-3">
             <UserPlus className="h-8 w-8 text-blue-600" />
             Add New Candidate

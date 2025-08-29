@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Upload, Search, Users, Settings, FileText, Zap, Sparkles } from "lucide-react"
+import { Upload, Search, Users, Settings, FileText, Zap } from "lucide-react"
 import Link from "next/link"
 
 export function QuickActions() {
@@ -56,50 +56,33 @@ export function QuickActions() {
   ]
 
   return (
-    <Card className="relative overflow-hidden">
+    <Card>
       <CardHeader>
-        <div className="flex items-center gap-2">
-          <div className="p-2 bg-gradient-to-r from-purple-500 to-blue-500 rounded-lg">
-            <Sparkles className="h-5 w-5 text-white" />
-          </div>
-          <div>
-            <CardTitle>Quick Actions</CardTitle>
-            <CardDescription>
-              Common tasks and operations
-            </CardDescription>
-          </div>
-        </div>
+        <CardTitle>Quick Actions</CardTitle>
+        <CardDescription>Snelle toegang tot veelgebruikte taken</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
           {actions.map((action, index) => {
             const Icon = action.icon
             return (
-              <div key={index} className="group">
-                <Link href={action.href}>
-                  <div className={`relative p-4 rounded-xl bg-gradient-to-br ${action.bgGradient} dark:from-gray-800 dark:to-gray-900 border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer group-hover:border-gray-300`}>
-                    <div className="flex flex-col items-center gap-3 text-center">
-                      <div className={`p-3 rounded-full bg-gradient-to-r ${action.gradient} shadow-lg`}>
-                        <Icon className="h-5 w-5 text-white" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">{action.title}</p>
-                        <p className="text-xs text-muted-foreground mt-1">{action.description}</p>
-                      </div>
+              <Link key={index} href={action.href} className="block h-full">
+                <div className="h-full p-4 md:p-5 rounded-lg border hover:bg-muted transition-colors">
+                  <div className="flex items-start gap-3 md:gap-4">
+                    <div className="p-2 rounded-md bg-muted shrink-0">
+                      <Icon className="h-4 w-4" />
                     </div>
-                    
-                    {/* Decorative gradient */}
-                    <div className={`absolute top-0 right-0 w-16 h-16 bg-gradient-to-br ${action.gradient} opacity-10 rounded-full -translate-y-8 translate-x-8`} />
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-medium leading-6">{action.title}</p>
+                      <p className="text-xs text-muted-foreground leading-5 line-clamp-2">{action.description}</p>
+                    </div>
                   </div>
-                </Link>
-              </div>
+                </div>
+              </Link>
             )
           })}
         </div>
       </CardContent>
-      
-      {/* Background decoration */}
-      <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-500/5 to-blue-500/5 rounded-full -translate-y-16 translate-x-16" />
     </Card>
   )
 }

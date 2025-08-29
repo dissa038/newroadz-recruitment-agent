@@ -211,20 +211,20 @@ export default function CandidateProfilePage() {
   return (
     <div className="container mx-auto py-8 space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <Button variant="ghost" asChild>
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <Button variant="ghost" asChild className="sm:order-1 order-2 w-full sm:w-auto justify-center">
           <Link href="/candidates">
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Candidates
           </Link>
         </Button>
-        <div className="flex gap-2">
-          <Button variant="outline">
+        <div className="flex flex-wrap gap-2 order-1 sm:order-2 w-full sm:w-auto justify-start sm:justify-end">
+          <Button variant="outline" className="w-full sm:w-auto">
             <Edit className="h-4 w-4 mr-2" />
             Edit
           </Button>
           {candidate.cv_file_url && (
-            <Button variant="outline" asChild>
+            <Button variant="outline" asChild className="w-full sm:w-auto">
               <a href={candidate.cv_file_url} target="_blank" rel="noopener noreferrer">
                 <Download className="h-4 w-4 mr-2" />
                 Download CV

@@ -169,6 +169,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
+  const mapAuthError = (code?: string, message?: string) => {
+    switch (code) {
+      case 'invalid_credentials':
+      case 'invalid_grant':
+      case 'PGRST301':
+        return { title: 'Onjuiste inloggegevens', description: 'Controleer je e-mail en wachtwoord.' }
+      case 'user_not_found':
+        return { title: 'Account niet gevonden', description: 'Er is geen account met dit e-mailadres.' }
+      case 'email_not_confirmed':
+        return { title: 'Bevestig je e-mail', description: 'Check je inbox om je account te activeren.' }
+      case 'rate_limit_exceeded':
+        return { title: 'Te veel pogingen', description: 'Probeer het later opnieuw.' }
+      case 'user_already_exists':
+        return { title: 'Gebruiker bestaat al', description: 'Gebruik een ander e-mailadres of log in.' }
+      default:
+        return { title: 'Er ging iets mis', description: message || 'Probeer het later opnieuw.' }
+    }
+  }
+
   const signInWithEmail = async (email: string, password: string) => {
     try {
       setLoading(true)
@@ -178,22 +197,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       })
       
       if (error) {
-        toast({
-          title: "Sign in failed",
-          description: error.message,
-          variant: "destructive",
-        })
+        const mapped = mapAuthError((error as any)?.code, error.message)
+        toast({ ...mapped, variant: "destructive" })
         return { error }
       }
       
+      toast({ title: 'Welkom terug!', description: `Ingelogd als ${email}` })
       return {}
     } catch (error) {
       console.error('Error signing in with email:', error)
-      toast({
-        title: "Sign in failed",
-        description: "An unknown error occurred",
-        variant: "destructive",
-      })
+      toast({ title: 'Er ging iets mis', description: 'Probeer het later opnieuw.', variant: 'destructive' })
       return { error }
     } finally {
       setLoading(false)
@@ -213,27 +226,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       })
 
       if (error) {
-        toast({
-          title: "Sign up failed",
-          description: error.message,
-          variant: "destructive",
-        })
+        const mapped = mapAuthError((error as any)?.code, error.message)
+        toast({ ...mapped, variant: "destructive" })
         return { error }
       }
 
-      toast({
-        title: "Account created",
-        description: "Check your email to confirm your account",
-      })
+      toast({ title: 'Account aangemaakt', description: 'Check je mail om je account te bevestigen.' })
 
       return {}
     } catch (error) {
       console.error('Error signing up with email:', error)
-      toast({
-        title: "Sign up failed",
-        description: "An unknown error occurred",
-        variant: "destructive",
-      })
+      toast({ title: 'Er ging iets mis', description: 'Probeer het later opnieuw.', variant: 'destructive' })
       return { error }
     } finally {
       setLoading(false)

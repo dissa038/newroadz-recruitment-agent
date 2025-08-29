@@ -42,12 +42,11 @@ export default function ChatPage() {
   const [isMobileChatListOpen, setIsMobileChatListOpen] = useState(false)
   const [isCreatingNewChat, setIsCreatingNewChat] = useState(false)
 
-  // Load conversations on mount
+  // Load conversations on mount (do not depend on user to avoid stuck loading)
   useEffect(() => {
-    if (user) {
-      loadConversations()
-    }
-  }, [user])
+    loadConversations()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // Load messages when conversation changes
   useEffect(() => {
@@ -65,10 +64,14 @@ export default function ChatPage() {
       const result = await response.json()
       
       if (result.success) {
-        setConversations(result.data.conversations)
-        if (!selectedConversationId && result.data.conversations.length > 0) {
-          setSelectedConversationId(result.data.conversations[0].id)
+        const list = result.data.conversations || []
+        setConversations(list)
+        if (!selectedConversationId && list.length > 0) {
+          setSelectedConversationId(list[0].id)
         }
+      } else {
+        // Surface error but ensure loading stops
+        toast({ title: 'Fout', description: result.error || 'Kon gesprekken niet laden', variant: 'destructive' })
       }
     } catch (error) {
       toast({

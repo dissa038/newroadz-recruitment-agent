@@ -35,6 +35,11 @@ export function ChatList({
     return new Date(bTime).getTime() - new Date(aTime).getTime()
   })
 
+  if (sidebarCollapsed) {
+    // Hide list entirely when collapsed
+    return null
+  }
+
   return (
     <div className="p-2">
       {sortedConversations.map((conversation) => (

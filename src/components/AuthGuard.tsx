@@ -25,8 +25,13 @@ export function AuthGuard({ children }: AuthGuardProps) {
     }
   }, [isAuthenticated, loading, pathname, isPublicRoute, router])
 
-  // Show loading spinner while checking auth
-  if (loading) {
+  // If authenticated, always render children immediately (defensive against stuck loading)
+  if (isAuthenticated) {
+    return <>{children}</>
+  }
+
+  // Show loading spinner while checking auth for protected routes
+  if (loading && !isPublicRoute) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">

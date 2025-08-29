@@ -20,12 +20,17 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 
-const authSchema = z.object({
+const signInSchema = z.object({
   email: z.string().email('Invalid email address'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
-  first_name: z.string().optional(),
-  last_name: z.string().optional(),
-  phone: z.string().optional(),
+})
+
+const signUpSchema = z.object({
+  email: z.string().email('Invalid email address'),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
+  first_name: z.string().min(1, 'Voornaam is verplicht'),
+  last_name: z.string().min(1, 'Achternaam is verplicht'),
+  phone: z.string().min(1, 'Telefoonnummer is verplicht'),
 })
 
 export default function LoginPage() {
@@ -34,11 +39,15 @@ export default function LoginPage() {
   const [isSignUp, setIsSignUp] = useState(false)
   const router = useRouter()
 
-  const form = useForm<z.infer<typeof authSchema>>({
-    resolver: zodResolver(authSchema),
+  const currentSchema = isSignUp ? signUpSchema : signInSchema
+  const form = useForm<z.infer<typeof currentSchema>>({
+    resolver: zodResolver(currentSchema),
     defaultValues: {
       email: '',
       password: '',
+      first_name: '',
+      last_name: '',
+      phone: '',
     },
   })
 
@@ -49,10 +58,26 @@ export default function LoginPage() {
     }
   }, [isAuthenticated, authLoading, router])
 
-  const onSubmit = async (values: z.infer<typeof authSchema>) => {
+  // Reset form when switching between sign in and sign up
+  useEffect(() => {
+    form.reset({
+      email: '',
+      password: '',
+      first_name: '',
+      last_name: '',
+      phone: '',
+    })
+  }, [isSignUp, form])
+
+  const onSubmit = async (values: z.infer<typeof currentSchema>) => {
     setIsLoading(true)
     if (isSignUp) {
-      await signUpWithEmail(values.email, values.password)
+      const userData = {
+        first_name: values.first_name || undefined,
+        last_name: values.last_name || undefined,
+        phone: values.phone || undefined,
+      }
+      await signUpWithEmail(values.email, values.password, userData)
     } else {
       await signInWithEmail(values.email, values.password)
     }
@@ -96,6 +121,51 @@ export default function LoginPage() {
         <CardContent className="space-y-4">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              {isSignUp && (
+                <>
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="first_name"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Voornaam *</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Voornaam" required {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="last_name"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Achternaam *</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Achternaam" required {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <FormField
+                    control={form.control}
+                    name="phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Telefoonnummer *</FormLabel>
+                        <FormControl>
+                          <Input placeholder="+31 6 12345678" type="tel" required {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </>
+              )}
               <FormField
                 control={form.control}
                 name="email"

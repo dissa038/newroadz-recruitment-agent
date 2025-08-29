@@ -105,9 +105,8 @@ export function DashboardStats() {
       description: "Active profiles in database",
       icon: Users,
       trend: `Apollo: ${stats.sourceDistribution.apollo}, Loxo: ${stats.sourceDistribution.loxo}, CV: ${stats.sourceDistribution.cv_upload}`,
-      gradient: "from-blue-500 to-cyan-500",
-      bgGradient: "from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20",
-      borderColor: "border-blue-200 dark:border-blue-800"
+      accent: "text-foreground",
+      borderColor: "border-border"
     },
     {
       title: "New This Week",
@@ -115,9 +114,8 @@ export function DashboardStats() {
       description: "Recently added candidates",
       icon: UserPlus,
       trend: formatTrend(stats.trends.weeklyGrowth),
-      gradient: "from-emerald-500 to-green-500",
-      bgGradient: "from-emerald-50 to-green-50 dark:from-emerald-900/20 dark:to-green-900/20",
-      borderColor: "border-emerald-200 dark:border-emerald-800"
+      accent: "text-foreground",
+      borderColor: "border-border"
     },
     {
       title: "Active Processes",
@@ -125,9 +123,8 @@ export function DashboardStats() {
       description: "Ongoing scrapes and syncs",
       icon: Activity,
       trend: formatTrend(stats.trends.completedScrapesThisWeek, 'count'),
-      gradient: "from-orange-500 to-amber-500",
-      bgGradient: "from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-amber-900/20",
-      borderColor: "border-orange-200 dark:border-orange-800"
+      accent: "text-foreground",
+      borderColor: "border-border"
     },
     {
       title: "AI Processing",
@@ -135,9 +132,8 @@ export function DashboardStats() {
       description: "Candidates with embeddings",
       icon: TrendingUp,
       trend: `${stats.trends.pendingEmbeddings} pending jobs`,
-      gradient: "from-purple-500 to-violet-500",
-      bgGradient: "from-purple-50 to-violet-50 dark:from-purple-900/20 dark:to-violet-900/20",
-      borderColor: "border-purple-200 dark:border-purple-800"
+      accent: "text-foreground",
+      borderColor: "border-border"
     }
   ]
 
@@ -146,30 +142,27 @@ export function DashboardStats() {
       {statCards.map((stat, index) => {
         const Icon = stat.icon
         return (
-          <Card key={index} className={`relative overflow-hidden bg-gradient-to-br ${stat.bgGradient} ${stat.borderColor} hover:shadow-lg transition-all duration-300 hover:scale-105`}>
+          <Card key={index} className={`relative ${stat.borderColor}`}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              <CardTitle className="text-sm font-medium">
                 {stat.title}
               </CardTitle>
-              <div className={`p-2 rounded-lg bg-gradient-to-r ${stat.gradient} bg-opacity-10`}>
-                <Icon className={`h-4 w-4 bg-gradient-to-r ${stat.gradient} bg-clip-text text-transparent`} />
+              <div className="p-2 rounded-md bg-muted">
+                <Icon className="h-4 w-4" />
               </div>
             </CardHeader>
             <CardContent>
-              <div className={`text-3xl font-bold bg-gradient-to-r ${stat.gradient} bg-clip-text text-transparent mb-1`}>
+              <div className="text-3xl font-bold mb-1">
                 {stat.value}
               </div>
               <p className="text-xs text-muted-foreground mb-2">
                 {stat.description}
               </p>
               <div className="flex items-center text-xs">
-                <div className={`w-2 h-2 rounded-full bg-gradient-to-r ${stat.gradient} mr-2`} />
+                <div className="w-2 h-2 rounded-full bg-muted mr-2" />
                 <span className="text-muted-foreground">{stat.trend}</span>
               </div>
             </CardContent>
-            
-            {/* Decorative gradient overlay */}
-            <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${stat.gradient} opacity-5 rounded-full -translate-y-16 translate-x-16`} />
           </Card>
         )
       })}

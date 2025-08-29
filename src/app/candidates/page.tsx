@@ -170,27 +170,27 @@ export default function CandidatesPage() {
   const totalPages = Math.ceil(total / (filters.limit || 20))
 
   return (
-    <div className="container mx-auto py-8 space-y-8">
+    <div className="container mx-auto px-4 py-8 space-y-8">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-3xl font-bold">Candidates</h1>
           <p className="text-muted-foreground">
             Manage and search through your candidate database
           </p>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" asChild>
+        <div className="flex flex-wrap gap-2 w-full sm:w-auto">
+          <Button variant="outline" asChild className="w-full sm:w-auto">
             <Link href="/candidates/upload">
               <Upload className="h-4 w-4 mr-2" />
               Upload CVs
             </Link>
           </Button>
-          <Button variant="outline">
+          <Button variant="outline" className="w-full sm:w-auto">
             <Download className="h-4 w-4 mr-2" />
             Export
           </Button>
-          <Button asChild>
+          <Button asChild className="w-full sm:w-auto">
             <Link href="/candidates/new">
               <UserPlus className="h-4 w-4 mr-2" />
               Add Candidate
@@ -421,11 +421,11 @@ export default function CandidatesPage() {
               {candidates.map((candidate) => (
                 <div 
                   key={candidate.id} 
-                  className="border rounded-lg p-4 hover:bg-accent/50 transition-colors"
+                  className="border rounded-lg p-4 hover:bg-muted transition-colors"
                 >
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-start space-x-4">
-                      <Avatar className="h-12 w-12">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                    <div className="flex items-start gap-3 sm:gap-4 min-w-0">
+                      <Avatar className="h-12 w-12 flex-shrink-0">
                         <AvatarImage src={candidate.photo_url} />
                         <AvatarFallback>
                           {candidate.full_name
@@ -434,9 +434,9 @@ export default function CandidatesPage() {
                             .join('') || '??'}
                         </AvatarFallback>
                       </Avatar>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <h3 className="font-semibold">{candidate.full_name}</h3>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1 min-w-0">
+                          <h3 className="font-semibold truncate">{candidate.full_name}</h3>
                           {candidate.similarity && (
                             <Badge variant="secondary" className="text-xs">
                               {Math.round(candidate.similarity * 100)}% match
@@ -444,35 +444,35 @@ export default function CandidatesPage() {
                           )}
                         </div>
                         {candidate.current_title && (
-                          <p className="text-sm text-muted-foreground mb-1">
+                          <p className="text-sm text-muted-foreground mb-1 truncate">
                             {candidate.current_title}
                           </p>
                         )}
-                        <div className="flex items-center gap-4 text-xs text-muted-foreground mb-2">
+                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground mb-2">
                           {candidate.current_company && (
                             <div className="flex items-center gap-1">
                               <Building className="h-3 w-3" />
-                              {candidate.current_company}
+                              <span className="truncate max-w-[12rem] sm:max-w-none">{candidate.current_company}</span>
                             </div>
                           )}
                           {(candidate.city || candidate.state || candidate.country) && (
                             <div className="flex items-center gap-1">
                               <MapPin className="h-3 w-3" />
-                              {[candidate.city, candidate.state, candidate.country]
+                              <span className="truncate max-w-[12rem] sm:max-w-none">{[candidate.city, candidate.state, candidate.country]
                                 .filter(Boolean)
-                                .join(', ')}
+                                .join(', ')}</span>
                             </div>
                           )}
                           {candidate.email && (
                             <div className="flex items-center gap-1">
                               <Mail className="h-3 w-3" />
-                              {candidate.email}
+                              <span className="truncate max-w-[12rem] sm:max-w-none">{candidate.email}</span>
                             </div>
                           )}
                           {candidate.phone && (
                             <div className="flex items-center gap-1">
                               <Phone className="h-3 w-3" />
-                              {candidate.phone}
+                              <span className="truncate">{candidate.phone}</span>
                             </div>
                           )}
                         </div>
@@ -499,11 +499,13 @@ export default function CandidatesPage() {
                         </div>
                       </div>
                     </div>
-                    <Button variant="ghost" size="sm" asChild>
-                      <Link href={`/candidates/${candidate.id}`}>
-                        <ExternalLink className="h-4 w-4" />
-                      </Link>
-                    </Button>
+                    <div className="self-start sm:self-auto">
+                      <Button variant="ghost" size="sm" asChild>
+                        <Link href={`/candidates/${candidate.id}`}>
+                          <ExternalLink className="h-4 w-4" />
+                        </Link>
+                      </Button>
+                    </div>
                   </div>
                 </div>
               ))}
