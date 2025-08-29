@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/server'
 import { apolloLogger } from '@/lib/logger'
 
 // GET /api/scrape/runs - List all scrape runs with pagination
@@ -13,7 +13,8 @@ export async function GET(request: NextRequest) {
     
     const offset = (page - 1) * limit
 
-    const supabase = await createClient()
+    // Use service client (server-side) for read-only admin visibility
+    const supabase = createServiceClient()
     
     // Build query
     let query = supabase

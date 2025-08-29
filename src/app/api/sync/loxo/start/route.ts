@@ -175,6 +175,22 @@ async function processLoxoSync(syncRunId: string, syncType: string, lastSyncTime
             // Convert Loxo data to candidate format
             const candidateData = convertLoxoToCandidate(contact)
 
+            // Pre-write validation: require at least one reliable identifier
+            const isValid = validateCandidate(candidateData)
+            if (!isValid) {
+              await supabase
+                .from('scrape_run_items')
+                .update({
+                  processing_status: 'failed',
+                  processing_notes: 'Validation failed: require email or phone or linkedin_url or (first_name+last_name and current_company)'
+                })
+                .eq('data_hash', dataHash)
+                .eq('run_id', syncRunId)
+
+              results.errors++
+              continue
+            }
+
             // Process through deduplication engine
             const result = await deduplicationEngine.processCandidate(candidateData)
             
@@ -184,8 +200,19 @@ async function processLoxoSync(syncRunId: string, syncType: string, lastSyncTime
               results.updated++
             }
 
-            // Queue embedding job
-            await embeddingJobService.queueEmbeddingJob(result.candidate.id, 'profile', 150)
+            // Embedding optimization: queue only if profile content changed
+            const profileHash = computeProfileProfileHash(result.candidate)
+            const { data: existingEmbedding, error: embeddingCheckError } = await (supabase as any)
+              .from('candidate_embeddings')
+              .select('id')
+              .eq('candidate_id', result.candidate.id)
+              .eq('embedding_type', 'profile')
+              .eq('content_hash', profileHash)
+              .maybeSingle()
+
+            if (!existingEmbedding && !embeddingCheckError) {
+              await embeddingJobService.queueEmbeddingJob(result.candidate.id, 'profile', 150)
+            }
 
             // Update scrape run item status
             await supabase
@@ -203,6 +230,20 @@ async function processLoxoSync(syncRunId: string, syncType: string, lastSyncTime
           } catch (error) {
             results.errors++
             log.error({ error: error.message, stack: error.stack, contactId: contact.id }, 'Failed to process contact')
+
+            // Mark failed with reason
+            try {
+              await supabase
+                .from('scrape_run_items')
+                .update({
+                  processing_status: 'failed',
+                  processing_notes: error instanceof Error ? error.message : 'Unknown error'
+                })
+                .eq('run_id', syncRunId)
+                .eq('data_hash', generateDataHash(contact))
+            } catch (e) {
+              log.warn({ e }, 'Failed to update scrape_run_item as failed')
+            }
           }
         }
 
@@ -211,6 +252,21 @@ async function processLoxoSync(syncRunId: string, syncType: string, lastSyncTime
           processed: results.processed,
           total: results.total 
         }, 'Sync progress')
+
+        // Update last_sync_timestamp checkpoint based on last item in this page
+        try {
+          const last = contacts[contacts.length - 1]
+          const lastUpdatedRaw = last?.updated_at || last?.updatedAt || null
+          if (lastUpdatedRaw) {
+            const lastUpdatedISO = new Date(lastUpdatedRaw).toISOString()
+            await supabase
+              .from('scrape_runs')
+              .update({ last_sync_timestamp: lastUpdatedISO })
+              .eq('id', syncRunId)
+          }
+        } catch (e) {
+          log.warn({ e }, 'Failed to update last_sync_timestamp')
+        }
 
         // Check if there are more pages
         hasMore = !!scrollId && contacts.length > 0
@@ -264,49 +320,59 @@ async function processLoxoSync(syncRunId: string, syncType: string, lastSyncTime
  * Convert Loxo contact data to candidate format
  */
 function convertLoxoToCandidate(contact: any): CandidateInsert {
+  // Prefer nested raw fields when top-level are missing
+  const raw = contact
+  const rawEmail = Array.isArray(raw.emails) && raw.emails.length > 0 ? raw.emails[0]?.value : undefined
+  const rawPhone = Array.isArray(raw.phones) && raw.phones.length > 0 ? raw.phones[0]?.value : undefined
+  const [firstName, lastName] = splitFullName(raw.first_name, raw.last_name, raw.name)
+
+  const normalizedEmail = normalizeEmail(raw.email || rawEmail)
+  const normalizedPhone = normalizePhone(raw.phone || rawPhone)
+  const linkedinUrl = normalizeUrl(raw.linkedin_url)
+
   return {
     source: 'loxo',
-    external_id: contact.id?.toString(),
-    loxo_id: contact.id?.toString(),
-    loxo_contact_id: contact.contact_id,
-    
-    // Personal info
-    first_name: contact.first_name,
-    last_name: contact.last_name,
-    email: contact.email,
-    phone: contact.phone,
-    linkedin_url: contact.linkedin_url,
-    
+    external_id: raw.id?.toString(),
+    loxo_id: raw.id?.toString(),
+    loxo_contact_id: raw.contact_id,
+
+    // Personal info (normalized)
+    first_name: firstName || null,
+    last_name: lastName || null,
+    email: normalizedEmail || null,
+    phone: normalizedPhone || null,
+    linkedin_url: linkedinUrl || null,
+
     // Professional info
-    current_title: contact.current_title || contact.title,
-    current_company: contact.current_company || contact.company,
-    headline: contact.headline || contact.summary,
-    seniority_level: contact.seniority_level,
-    years_experience: contact.years_experience,
-    industry: contact.industry,
-    
+    current_title: raw.current_title || raw.title || null,
+    current_company: raw.current_company || raw.company || null,
+    headline: raw.headline || raw.summary || null,
+    seniority_level: raw.seniority_level || null,
+    years_experience: raw.years_experience || null,
+    industry: raw.industry || null,
+
     // Location
-    city: contact.city,
-    state: contact.state,
-    country: contact.country,
-    
+    city: raw.city || null,
+    state: raw.state || null,
+    country: raw.country || null,
+
     // Loxo specific
-    loxo_profile_score: contact.profile_score,
-    loxo_tags: contact.tags || [],
-    
+    loxo_profile_score: raw.profile_score || null,
+    loxo_tags: raw.tags || [],
+
     // Skills and qualifications
-    skills: contact.skills || [],
-    certifications: contact.certifications || [],
-    education: contact.education ? JSON.parse(JSON.stringify(contact.education)) : null,
-    employment_history: contact.work_history ? JSON.parse(JSON.stringify(contact.work_history)) : null,
-    
+    skills: raw.skills || [],
+    certifications: raw.certifications || [],
+    education: raw.education ? JSON.parse(JSON.stringify(raw.education)) : null,
+    employment_history: raw.work_history ? JSON.parse(JSON.stringify(raw.work_history)) : null,
+
     // Meta fields
-    tags: contact.tags || [],
+    tags: raw.tags || [],
     priority: 'medium',
     status: 'active',
-    contact_status: contact.status || 'new',
+    contact_status: raw.status || 'new',
     embedding_status: 'pending',
-    
+
     // Raw data
     loxo_raw_data: JSON.parse(JSON.stringify(contact))
   }
@@ -318,4 +384,65 @@ function convertLoxoToCandidate(contact: any): CandidateInsert {
 function generateDataHash(data: any): string {
   const crypto = require('crypto')
   return crypto.createHash('sha256').update(JSON.stringify(data)).digest('hex')
+}
+
+/**
+ * Validate minimal candidate fields before writing
+ */
+function validateCandidate(c: CandidateInsert): boolean {
+  const hasIdentity = !!(c.email || c.phone || c.linkedin_url || ((c.first_name || c.last_name) && c.current_company))
+  return hasIdentity
+}
+
+/**
+ * Compute a stable profile content hash to detect changes for embeddings
+ */
+function computeProfileProfileHash(candidate: any): string {
+  const crypto = require('crypto')
+  const parts = [
+    candidate.full_name || `${candidate.first_name || ''} ${candidate.last_name || ''}`.trim(),
+    candidate.current_title || '',
+    candidate.current_company || '',
+    Array.isArray(candidate.skills) ? candidate.skills.slice().sort() : [],
+    candidate.headline || '',
+    candidate.employment_history || null,
+    candidate.cv_parsed_text || ''
+  ]
+  const stringified = JSON.stringify(parts)
+  return crypto.createHash('sha256').update(stringified).digest('hex')
+}
+
+// Helpers
+function splitFullName(first?: string | null, last?: string | null, fallbackName?: string | null): [string | null, string | null] {
+  if (first || last) return [first || null, last || null]
+  const name = (fallbackName || '').trim()
+  if (!name) return [null, null]
+  const parts = name.split(/\s+/)
+  if (parts.length === 1) return [parts[0], null]
+  const lastName = parts.pop() as string
+  const firstName = parts.join(' ')
+  return [firstName || null, lastName || null]
+}
+
+function normalizeEmail(email?: string | null): string | null {
+  if (!email) return null
+  const e = String(email).trim().toLowerCase()
+  return /.+@.+\..+/.test(e) ? e : null
+}
+
+function normalizePhone(phone?: string | null): string | null {
+  if (!phone) return null
+  // Keep digits and plus, naive E.164 cleanup
+  const cleaned = String(phone).replace(/[^\d+]/g, '')
+  if (!cleaned) return null
+  if (cleaned.startsWith('+')) return cleaned
+  // Assume NL if no country code; adjust as needed
+  if (cleaned.startsWith('0')) return `+31${cleaned.slice(1)}`
+  return `+31${cleaned}`
+}
+
+function normalizeUrl(url?: string | null): string | null {
+  if (!url) return null
+  const u = String(url).trim()
+  return u || null
 }

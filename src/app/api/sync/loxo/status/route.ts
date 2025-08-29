@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
     // Get processing details
     const { data: items, error: itemsError } = await supabase
       .from('scrape_run_items')
-      .select('processing_status')
+      .select('processing_status, processing_notes')
       .eq('run_id', runId)
 
     const itemStats = items?.reduce((acc, item) => {

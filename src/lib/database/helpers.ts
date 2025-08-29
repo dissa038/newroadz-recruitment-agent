@@ -16,11 +16,20 @@ export class CandidateService {
   // Create a new candidate
   async createCandidate(data: CandidateInsert): Promise<Candidate | null> {
     const supabase = this.getSupabase()
-    const { data: candidate, error } = await supabase
-      .from('candidates')
-      .insert(data)
-      .select()
-      .single()
+    // Prefer idempotent upsert when loxo_id is present to avoid duplicate key violations
+    const shouldUpsertOnLoxo = !!(data as any).loxo_id
+    const query = supabase
+      .from('candidates') as any
+
+    const { data: candidate, error } = shouldUpsertOnLoxo
+      ? await (query
+          .upsert(data, { onConflict: 'loxo_id' })
+          .select()
+          .single())
+      : await (query
+          .insert(data)
+          .select()
+          .single())
 
     if (error) {
       console.error('Error creating candidate:', error)
@@ -50,9 +59,12 @@ export class CandidateService {
   // Update candidate
   async updateCandidate(id: string, data: CandidateUpdate): Promise<Candidate | null> {
     const supabase = this.getSupabase()
+    // Never attempt to update generated or immutable columns
+    const { full_name, id: _ignoreId, created_at: _ignoreCreatedAt, ...safeData } = (data as any) || {}
+
     const { data: candidate, error } = await supabase
       .from('candidates')
-      .update({ ...data, updated_at: new Date().toISOString() })
+      .update({ ...safeData, updated_at: new Date().toISOString() })
       .eq('id', id)
       .select()
       .single()
@@ -153,6 +165,16 @@ export class CandidateService {
           .from('candidates')
           .select('*')
           .eq('email', candidate.email)
+      )
+    }
+
+    // Level 2b: Exact loxo_id match (strong external ID)
+    if ((candidate as any).loxo_id) {
+      queries.push(
+        supabase
+          .from('candidates')
+          .select('*')
+          .eq('loxo_id', (candidate as any).loxo_id)
       )
     }
 

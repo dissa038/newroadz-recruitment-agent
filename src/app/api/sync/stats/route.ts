@@ -66,12 +66,23 @@ export async function GET(request: NextRequest) {
     const successfulRuns = monthlyStats?.filter(run => run.status === 'completed').length || 0
     const successRate = totalMonthlyRuns > 0 ? Math.round((successfulRuns / totalMonthlyRuns) * 100) : 0
 
+    // Embedding queue stats
+    const { data: embCounts } = await supabase
+      .from('embedding_jobs')
+      .select('status', { count: 'exact', head: false })
+
+    const embeddingByStatus = (embCounts || []).reduce((acc: any, row: any) => {
+      acc[row.status] = (acc[row.status] || 0) + 1
+      return acc
+    }, {})
+
     const stats = {
       overview: {
         totalLoxoCandidates: totalLoxoCandidates || 0,
         totalLoxoCompanies: totalLoxoCompanies || 0,
         runningSyncs: runningSyncCount || 0,
-        successRate
+        successRate,
+        embeddingQueue: embeddingByStatus
       },
       lastSync: lastSync?.[0] ? {
         id: lastSync[0].id,
