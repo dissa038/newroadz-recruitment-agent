@@ -10,12 +10,12 @@ export async function POST(request: NextRequest) {
   try {
     const { limit = 1000 } = await request.json().catch(() => ({ limit: 1000 }))
 
-    // Fetch candidates needing backfill: top-level email/phone missing but present in raw
+    // Fetch candidates needing backfill: top-level fields missing but present in raw data
     const { data: candidates, error } = await (supabase as any)
       .from('candidates')
       .select('id, first_name, last_name, email, phone, linkedin_url, current_title, current_company, loxo_raw_data')
       .eq('source', 'loxo')
-      .or('email.is.null,phone.is.null')
+      .or('email.is.null,phone.is.null,current_title.is.null')
       .limit(limit)
 
     if (error) {
@@ -39,7 +39,11 @@ export async function POST(request: NextRequest) {
       if (!c.email && email) updates.email = email
       if (!c.phone && phone) updates.phone = phone
       if (!c.linkedin_url && raw.linkedin_url) updates.linkedin_url = normalizeUrl(raw.linkedin_url)
-      if (!c.current_title && (raw.current_title || raw.title)) updates.current_title = raw.current_title || raw.title
+      // Enhanced current_title mapping - include candidate_jobs
+      const candidateJobTitle = raw.candidate_jobs && raw.candidate_jobs.length > 0 ? raw.candidate_jobs[0].title : null
+      if (!c.current_title && (raw.current_title || raw.title || candidateJobTitle)) {
+        updates.current_title = raw.current_title || raw.title || candidateJobTitle
+      }
       if (!c.current_company && (raw.current_company || raw.company)) updates.current_company = raw.current_company || raw.company
 
       if (Object.keys(updates).length === 0) continue

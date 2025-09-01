@@ -1,20 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createClient } from '@supabase/supabase-js'
 import { candidateService, embeddingJobService } from '@/lib/database/helpers'
 import { GeminiService } from '@/lib/ai/gemini'
 import { embeddingLogger, createBatchLogger } from '@/lib/logger'
 
 const geminiService = new GeminiService()
 
+// Use service role client for consistent access
+const supabaseService = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+)
+
 // POST /api/embed/queue/run - Process embedding jobs from the queue
 export async function POST(request: NextRequest) {
   try {
-    const { batchSize = 10, maxJobs = 100 } = await request.json()
+    const { batchSize = 10, maxJobs = 500 } = await request.json()  // INCREASED: Process more jobs per run
     
     embeddingLogger.info({ batchSize, maxJobs }, 'Starting embedding queue processing')
 
-    const supabase = await createClient()
-    
+    // Use service role client for consistent access
+    const supabase = supabaseService
+
     // Get pending embedding jobs
     const { data: jobs, error: jobsError } = await supabase
       .from('embedding_jobs')
@@ -33,7 +40,18 @@ export async function POST(request: NextRequest) {
     }
 
     if (!jobs.length) {
-      embeddingLogger.info('No pending embedding jobs found')
+      // DEBUG: Check if jobs exist but query doesn't find them
+      const { data: debugJobs, error: debugError } = await supabase
+        .from('embedding_jobs')
+        .select('id, status, created_at')
+        .limit(5)
+
+      embeddingLogger.warn({
+        debugJobs: debugJobs?.slice(0, 3),
+        debugError,
+        message: 'No pending embedding jobs found despite jobs existing in database'
+      })
+
       return NextResponse.json({
         success: true,
         data: {

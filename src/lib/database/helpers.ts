@@ -16,20 +16,33 @@ export class CandidateService {
   // Create a new candidate
   async createCandidate(data: CandidateInsert): Promise<Candidate | null> {
     const supabase = this.getSupabase()
-    // Prefer idempotent upsert when loxo_id is present to avoid duplicate key violations
-    const shouldUpsertOnLoxo = !!(data as any).loxo_id
-    const query = supabase
-      .from('candidates') as any
 
-    const { data: candidate, error } = shouldUpsertOnLoxo
-      ? await (query
-          .upsert(data, { onConflict: 'loxo_id' })
-          .select()
-          .single())
-      : await (query
-          .insert(data)
-          .select()
-          .single())
+    // Handle Loxo candidates with manual duplicate check instead of upsert
+    if ((data as any).loxo_id) {
+      // Check if candidate with this loxo_id already exists
+      const { data: existing, error: checkError } = await supabase
+        .from('candidates')
+        .select('id')
+        .eq('loxo_id', (data as any).loxo_id)
+        .maybeSingle()
+
+      if (checkError) {
+        console.error('Error checking existing candidate:', checkError)
+        return null
+      }
+
+      if (existing) {
+        // Candidate exists, update it instead
+        return this.smartMerge(existing.id, data)
+      }
+    }
+
+    // No existing candidate found, create new one
+    const { data: candidate, error } = await supabase
+      .from('candidates')
+      .insert(data)
+      .select()
+      .single()
 
     if (error) {
       console.error('Error creating candidate:', error)

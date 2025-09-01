@@ -343,8 +343,9 @@ function convertLoxoToCandidate(contact: any): CandidateInsert {
     phone: normalizedPhone || null,
     linkedin_url: linkedinUrl || null,
 
-    // Professional info
-    current_title: raw.current_title || raw.title || null,
+    // Professional info - prioritize candidate_jobs title over current_title
+    current_title: raw.current_title || raw.title ||
+      (raw.candidate_jobs && raw.candidate_jobs.length > 0 ? raw.candidate_jobs[0].title : null),
     current_company: raw.current_company || raw.company || null,
     headline: raw.headline || raw.summary || null,
     seniority_level: raw.seniority_level || null,
@@ -360,11 +361,11 @@ function convertLoxoToCandidate(contact: any): CandidateInsert {
     loxo_profile_score: raw.profile_score || null,
     loxo_tags: raw.tags || [],
 
-    // Skills and qualifications
-    skills: raw.skills || [],
+    // Skills and qualifications - enhanced mapping
+    skills: parseSkillsFromLoxo(raw),
     certifications: raw.certifications || [],
-    education: raw.education ? JSON.parse(JSON.stringify(raw.education)) : null,
-    employment_history: raw.work_history ? JSON.parse(JSON.stringify(raw.work_history)) : null,
+    education: parseEducationFromLoxo(raw),
+    employment_history: parseEmploymentHistoryFromLoxo(raw),
 
     // Meta fields
     tags: raw.tags || [],
@@ -392,6 +393,291 @@ function generateDataHash(data: any): string {
 function validateCandidate(c: CandidateInsert): boolean {
   const hasIdentity = !!(c.email || c.phone || c.linkedin_url || ((c.first_name || c.last_name) && c.current_company))
   return hasIdentity
+}
+
+/**
+ * Parse skills from Loxo raw data - Enhanced version
+ */
+function parseSkillsFromLoxo(raw: any): string[] {
+  const skills: string[] = []
+
+  // Parse skillsets - handle multiple formats
+  if (raw.skillsets) {
+    if (typeof raw.skillsets === 'string') {
+      try {
+        // Try parsing as JSON first
+        const parsed = JSON.parse(raw.skillsets)
+        if (Array.isArray(parsed)) {
+          skills.push(...parsed.map((skill: any) => {
+            if (typeof skill === 'string') return skill
+            return skill.name || skill.title || skill.skill || String(skill)
+          }).filter(Boolean))
+        } else if (parsed && typeof parsed === 'object') {
+          // Handle object format
+          Object.values(parsed).forEach((skill: any) => {
+            if (typeof skill === 'string') skills.push(skill)
+            else if (skill?.name) skills.push(skill.name)
+          })
+        }
+      } catch (e) {
+        // If JSON parsing fails, try other formats
+        const skillsStr = raw.skillsets.trim()
+
+        // Handle empty array string
+        if (skillsStr === '[]' || skillsStr === '{}') {
+          // Skip empty arrays/objects
+        }
+        // Handle comma-separated with potential parentheses
+        else if (skillsStr.includes(',')) {
+          skills.push(...skillsStr
+            .split(',')
+            .map((s: string) => s.trim().replace(/[()[\]{}]/g, ''))
+            .filter((s: string) => s && s.length > 1)
+          )
+        }
+        // Handle pipe-separated
+        else if (skillsStr.includes('|')) {
+          skills.push(...skillsStr
+            .split('|')
+            .map((s: string) => s.trim())
+            .filter(Boolean)
+          )
+        }
+        // Handle semicolon-separated
+        else if (skillsStr.includes(';')) {
+          skills.push(...skillsStr
+            .split(';')
+            .map((s: string) => s.trim())
+            .filter(Boolean)
+          )
+        }
+        // Single skill
+        else if (skillsStr.length > 1) {
+          skills.push(skillsStr)
+        }
+      }
+    } else if (Array.isArray(raw.skillsets)) {
+      // Direct array
+      skills.push(...raw.skillsets.map((skill: any) => {
+        if (typeof skill === 'string') return skill
+        return skill.name || skill.title || skill.skill || String(skill)
+      }).filter(Boolean))
+    }
+  }
+
+  // Add any direct skills array
+  if (Array.isArray(raw.skills)) {
+    skills.push(...raw.skills.map((skill: any) => {
+      if (typeof skill === 'string') return skill
+      return skill.name || skill.title || skill.skill || String(skill)
+    }).filter(Boolean))
+  }
+
+  // Extract skills from job descriptions if available
+  if (raw.job_profiles && Array.isArray(raw.job_profiles)) {
+    raw.job_profiles.forEach((job: any) => {
+      if (job.skills && Array.isArray(job.skills)) {
+        skills.push(...job.skills.filter(Boolean))
+      }
+      if (job.technologies && Array.isArray(job.technologies)) {
+        skills.push(...job.technologies.filter(Boolean))
+      }
+    })
+  }
+
+  // Clean up and deduplicate skills
+  const cleanedSkills = skills
+    .map(skill => skill.trim())
+    .filter(skill => skill && skill.length > 1 && skill.length < 100) // Reasonable length limits
+    .map(skill => {
+      // Normalize common variations
+      return skill
+        .replace(/[^\w\s+#.-]/g, '') // Remove special chars except common tech ones
+        .replace(/\s+/g, ' ') // Normalize whitespace
+        .trim()
+    })
+    .filter(Boolean)
+
+  // Remove duplicates (case-insensitive)
+  const uniqueSkills = []
+  const seen = new Set()
+
+  for (const skill of cleanedSkills) {
+    const normalized = skill.toLowerCase()
+    if (!seen.has(normalized)) {
+      seen.add(normalized)
+      uniqueSkills.push(skill)
+    }
+  }
+
+  return uniqueSkills
+}
+
+/**
+ * Parse education from Loxo raw data - Enhanced version
+ */
+function parseEducationFromLoxo(raw: any): any[] | null {
+  const education: any[] = []
+
+  // Parse education array
+  if (raw.education && Array.isArray(raw.education)) {
+    education.push(...raw.education.map((edu: any) => ({
+      school: edu.school || edu.institution || edu.university || edu.college || null,
+      degree: edu.degree || edu.qualification || edu.level || null,
+      field_of_study: edu.field_of_study || edu.major || edu.subject || edu.discipline || null,
+      start_year: edu.start_year || edu.start_date || null,
+      end_year: edu.end_year || edu.end_date || edu.graduation_year || null,
+      grade: edu.grade || edu.gpa || edu.result || null,
+      description: edu.description || edu.activities || edu.notes || null,
+      location: edu.location || edu.city || null,
+      source: 'education'
+    })))
+  }
+
+  // Parse education_profiles if available (more detailed)
+  if (raw.education_profiles && Array.isArray(raw.education_profiles)) {
+    raw.education_profiles.forEach((edu: any) => {
+      // Check for duplicates
+      const exists = education.some(e =>
+        e.school === (edu.school || edu.institution || edu.university) &&
+        e.degree === (edu.degree || edu.qualification) &&
+        e.field_of_study === (edu.field_of_study || edu.major)
+      )
+
+      if (!exists) {
+        education.push({
+          school: edu.school || edu.institution || edu.university || edu.college || null,
+          degree: edu.degree || edu.qualification || edu.level || null,
+          field_of_study: edu.field_of_study || edu.major || edu.subject || edu.discipline || null,
+          start_year: edu.start_year || edu.start_date || null,
+          end_year: edu.end_year || edu.end_date || edu.graduation_year || null,
+          grade: edu.grade || edu.gpa || edu.result || null,
+          description: edu.description || edu.activities || edu.notes || null,
+          location: edu.location || edu.city || null,
+          honors: edu.honors || edu.awards || [],
+          relevant_courses: edu.courses || edu.relevant_courses || [],
+          source: 'education_profiles'
+        })
+      }
+    })
+  }
+
+  // Sort by end year (most recent first)
+  if (education.length > 0) {
+    education.sort((a, b) => {
+      const aYear = a.end_year ? parseInt(String(a.end_year)) : 0
+      const bYear = b.end_year ? parseInt(String(b.end_year)) : 0
+      return bYear - aYear
+    })
+  }
+
+  return education.length > 0 ? education : null
+}
+
+/**
+ * Parse employment history from Loxo raw data - Enhanced version
+ */
+function parseEmploymentHistoryFromLoxo(raw: any): any[] | null {
+  const history: any[] = []
+
+  // Add current position if available
+  if (raw.current_title && raw.current_company) {
+    history.push({
+      title: raw.current_title,
+      company: raw.current_company,
+      start_date: null,
+      end_date: null,
+      is_current: true,
+      description: raw.current_description || null,
+      location: raw.current_location || null,
+      source: 'current_position'
+    })
+  }
+
+  // Add candidate_jobs as employment history
+  if (Array.isArray(raw.candidate_jobs) && raw.candidate_jobs.length > 0) {
+    raw.candidate_jobs.forEach((job: any) => {
+      // Only add if not already added as current position
+      const isDuplicate = job.title === raw.current_title &&
+                         (job.company === raw.current_company || !job.company)
+
+      if (!isDuplicate) {
+        history.push({
+          title: job.title,
+          company: job.company || job.employer || null,
+          start_date: job.start_date || job.started_at || null,
+          end_date: job.end_date || job.ended_at || null,
+          is_current: job.is_current || job.current || false,
+          description: job.description || job.summary || null,
+          location: job.location || null,
+          job_id: job.id,
+          source: 'candidate_jobs'
+        })
+      }
+    })
+  }
+
+  // Add any work_history if available
+  if (Array.isArray(raw.work_history)) {
+    history.push(...raw.work_history.map((work: any) => ({
+      title: work.title || work.position || work.role || null,
+      company: work.company || work.employer || work.organization || null,
+      start_date: work.start_date || work.started_at || null,
+      end_date: work.end_date || work.ended_at || null,
+      is_current: work.is_current || work.current || false,
+      description: work.description || work.summary || work.responsibilities || null,
+      location: work.location || work.city || null,
+      achievements: work.achievements || [],
+      skills_used: work.skills || work.technologies || [],
+      source: 'work_history'
+    })))
+  }
+
+  // Add employment from job_profiles if available (most detailed)
+  if (Array.isArray(raw.job_profiles)) {
+    raw.job_profiles.forEach((job: any) => {
+      // Check if this job is already in history to avoid duplicates
+      const exists = history.some(h =>
+        h.title === job.title &&
+        h.company === (job.company || job.employer) &&
+        h.start_date === (job.start_date || job.started_at)
+      )
+
+      if (!exists) {
+        history.push({
+          title: job.title || job.position || job.role || null,
+          company: job.company || job.employer || job.organization || null,
+          start_date: job.start_date || job.started_at || null,
+          end_date: job.end_date || job.ended_at || null,
+          is_current: job.is_current || job.current || false,
+          description: job.description || job.summary || job.responsibilities || null,
+          location: job.location || job.city || null,
+          achievements: job.achievements || [],
+          skills_used: job.skills || job.technologies || [],
+          industry: job.industry || null,
+          company_size: job.company_size || null,
+          source: 'job_profiles'
+        })
+      }
+    })
+  }
+
+  // Sort by date (most recent first), handling null dates
+  if (history.length > 0) {
+    history.sort((a, b) => {
+      // Current jobs first
+      if (a.is_current && !b.is_current) return -1
+      if (!a.is_current && b.is_current) return 1
+
+      // Then by start date (most recent first)
+      const aDate = a.start_date ? new Date(a.start_date).getTime() : 0
+      const bDate = b.start_date ? new Date(b.start_date).getTime() : 0
+
+      return bDate - aDate
+    })
+  }
+
+  return history.length > 0 ? history : null
 }
 
 /**

@@ -3,29 +3,36 @@
 import { useState, useEffect } from 'react'
 import { LoxoSyncForm } from './components/LoxoSyncForm'
 import { LoxoSyncRunsList } from './components/LoxoSyncRunsList'
+import { LoxoEnhancementPanel } from './components/LoxoEnhancementPanel'
+import { EmbeddingPanel } from './components/EmbeddingPanel'
+import { UnifiedPipelinePanel } from './components/UnifiedPipelinePanel'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { 
-  RefreshCw, 
-  Zap, 
-  Users, 
-  TrendingUp, 
+import {
+  RefreshCw,
+  Zap,
+  Users,
+  TrendingUp,
   AlertTriangle,
   CheckCircle2,
   Info,
   Database,
   Building,
   Clock,
-  Activity
+  Activity,
+  Loader2,
+  Brain,
+  Rocket
 } from 'lucide-react'
 
 export default function SyncPage() {
   const [refreshTrigger, setRefreshTrigger] = useState(0)
   const [lastSyncDate, setLastSyncDate] = useState<string>()
   const [syncStats, setSyncStats] = useState<any>(null)
+  const [enhancementStats, setEnhancementStats] = useState<any>(null)
 
   const handleSyncStarted = (runId: string) => {
     // Trigger refresh of the runs list
@@ -45,6 +52,14 @@ export default function SyncPage() {
           if (statsResult.data.lastSync) {
             setLastSyncDate(statsResult.data.lastSync.completedAt)
           }
+        }
+
+        // Get enhancement statistics
+        const enhanceResponse = await fetch('/api/sync/loxo/enhance/status')
+        const enhanceResult = await enhanceResponse.json()
+
+        if (enhanceResult.success) {
+          setEnhancementStats(enhanceResult.data)
         }
       } catch (error) {
         console.error('Error fetching sync info:', error)
@@ -94,11 +109,23 @@ export default function SyncPage() {
       )}
 
       {/* Main Content */}
-      <Tabs defaultValue="sync" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3">
+      <Tabs defaultValue="pipeline" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-6">
+          <TabsTrigger value="pipeline" className="flex items-center gap-2">
+            <Rocket className="h-4 w-4" />
+            🚀 Pipeline
+          </TabsTrigger>
           <TabsTrigger value="sync" className="flex items-center gap-2">
             <RefreshCw className="h-4 w-4" />
             Start Sync
+          </TabsTrigger>
+          <TabsTrigger value="enhance" className="flex items-center gap-2">
+            <Zap className="h-4 w-4" />
+            Enhancement
+          </TabsTrigger>
+          <TabsTrigger value="embeddings" className="flex items-center gap-2">
+            <Brain className="h-4 w-4" />
+            AI Embeddings
           </TabsTrigger>
           <TabsTrigger value="history" className="flex items-center gap-2">
             <TrendingUp className="h-4 w-4" />
@@ -109,6 +136,10 @@ export default function SyncPage() {
             Help & Setup
           </TabsTrigger>
         </TabsList>
+
+        <TabsContent value="pipeline" className="space-y-6">
+          <UnifiedPipelinePanel />
+        </TabsContent>
 
         <TabsContent value="sync" className="space-y-6">
           <div className="grid gap-6 lg:grid-cols-3">
@@ -218,6 +249,28 @@ export default function SyncPage() {
               </Card>
             </div>
           </div>
+        </TabsContent>
+
+        <TabsContent value="enhance" className="space-y-6">
+          <LoxoEnhancementPanel
+            stats={enhancementStats}
+            onRefresh={() => {
+              setRefreshTrigger(prev => prev + 1)
+              // Refresh enhancement stats
+              fetch('/api/sync/loxo/enhance/status')
+                .then(res => res.json())
+                .then(result => {
+                  if (result.success) {
+                    setEnhancementStats(result.data)
+                  }
+                })
+                .catch(console.error)
+            }}
+          />
+        </TabsContent>
+
+        <TabsContent value="embeddings" className="space-y-6">
+          <EmbeddingPanel />
         </TabsContent>
 
         <TabsContent value="history" className="space-y-6">

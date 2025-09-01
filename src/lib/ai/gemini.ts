@@ -508,21 +508,46 @@ Geef alleen de titel terug, geen uitleg.`
   }
 
   /**
-   * Build candidate profile text for embedding
+   * Build candidate profile text for embedding - OPTIMIZED for all sources
    */
   private buildCandidateProfileText(candidate: Candidate): string {
     const parts = []
 
+    // Core identity
     if (candidate.full_name) parts.push(`Name: ${candidate.full_name}`)
     if (candidate.current_title) parts.push(`Title: ${candidate.current_title}`)
     if (candidate.current_company) parts.push(`Company: ${candidate.current_company}`)
     if (candidate.headline) parts.push(`Headline: ${candidate.headline}`)
-    if (candidate.industry) parts.push(`Industry: ${candidate.industry}`)
-    if (candidate.city) parts.push(`Location: ${candidate.city}`)
-    if (candidate.seniority_level) parts.push(`Seniority: ${candidate.seniority_level}`)
+
+    // Location
+    if (candidate.city || candidate.state || candidate.country) {
+      const location = [candidate.city, candidate.state, candidate.country].filter(Boolean).join(', ')
+      parts.push(`Location: ${location}`)
+    }
+
+    // Skills & Experience
     if (candidate.skills?.length) parts.push(`Skills: ${candidate.skills.join(', ')}`)
-    // Note: languages property not available in current Candidate type
-    // if (candidate.languages?.length) parts.push(`Languages: ${candidate.languages.join(', ')}`)
+    if (candidate.industry) parts.push(`Industry: ${candidate.industry}`)
+    if (candidate.seniority_level) parts.push(`Seniority: ${candidate.seniority_level}`)
+    if (candidate.years_experience) parts.push(`Experience: ${candidate.years_experience} years`)
+
+    // Enhanced data (Loxo)
+    if ((candidate as any).bio_description) {
+      parts.push(`Bio: ${(candidate as any).bio_description}`)
+    }
+
+    // Apollo-specific data
+    if (candidate.departments?.length) {
+      parts.push(`Departments: ${candidate.departments.join(', ')}`)
+    }
+    if (candidate.functions?.length) {
+      parts.push(`Functions: ${candidate.functions.join(', ')}`)
+    }
+
+    // Contact & engagement indicators
+    if (candidate.is_likely_to_engage) {
+      parts.push('Engagement: Likely to engage')
+    }
 
     return parts.join('\n')
   }
